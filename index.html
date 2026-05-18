@@ -90,17 +90,18 @@
     .icobtn{width:38px;height:38px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .15s,color .15s;position:relative}
     .icobtn.edit-on{background:var(--warn-bg);color:var(--warn-text);border-color:var(--warn-border)}
 
-    /* Sync dot on backup button */
-    .sync-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;display:none}
-    .sync-dot.syncing{display:block;background:#fbbf24;animation:pulse .8s ease-in-out infinite alternate}
-    .sync-dot.synced{display:block;background:#4ade80}
-    .sync-dot.error{display:block;background:#f87171}
-    @keyframes pulse{from{opacity:.4}to{opacity:1}}
-
     /* Year nav */
     .year-nav{display:flex;align-items:center;gap:6px;margin-left:8px}
     .year-lbl{font-size:14px;font-weight:700;color:var(--text);min-width:38px;text-align:center;letter-spacing:-.3px}
     .year-arrow{width:26px;height:26px;font-size:13px;border-radius:8px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+
+    /* Sync indicator */
+    .sync-indicator{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:6px;vertical-align:middle}
+    .sync-indicator.idle{background:var(--text3)}
+    .sync-indicator.syncing{background:#fbbf24;animation:pulse .8s ease-in-out infinite alternate}
+    .sync-indicator.synced{background:#4ade80}
+    .sync-indicator.error{background:#f87171}
+    @keyframes pulse{from{opacity:.4}to{opacity:1}}
 
     /* View tabs */
     .tabs{display:flex;background:var(--bg2);border-radius:var(--r);padding:3px;margin-bottom:12px;gap:2px}
@@ -242,21 +243,6 @@
     .link-url{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .link-empty{text-align:center;padding:48px 24px;color:var(--text3);font-size:15px;line-height:1.6}
 
-    /* Backup / sync panel overlay */
-    .bk-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:flex;align-items:flex-end;justify-content:center}
-    .bk-panel{background:var(--bg);border-radius:18px 18px 0 0;padding:20px 20px 36px;width:100%;max-width:480px}
-    .bk-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
-    .bk-subtitle{font-size:13px;color:var(--text3);margin-bottom:16px}
-    .bk-btn{display:flex;align-items:center;gap:10px;width:100%;padding:13px 15px;margin-bottom:8px;border-radius:12px;border:.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:15px;cursor:pointer;text-align:left;font-family:var(--sans);font-weight:500}
-    .bk-btn i{font-size:18px;color:var(--text3);flex-shrink:0}
-    .bk-status-row{display:flex;align-items:center;gap:10px;padding:12px 15px;border-radius:12px;background:var(--bg2);border:.5px solid var(--border2);margin-bottom:8px}
-    .bk-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-    .bk-status-dot.synced{background:#4ade80}
-    .bk-status-dot.syncing{background:#fbbf24;animation:pulse .8s ease-in-out infinite alternate}
-    .bk-status-dot.error{background:#f87171}
-    .bk-status-dot.idle{background:var(--text3)}
-    .bk-status-text{font-size:14px;color:var(--text2)}
-    .bk-close{display:block;width:100%;padding:13px;margin-top:4px;border-radius:12px;border:.5px solid var(--border2);background:transparent;color:var(--text3);font-size:15px;cursor:pointer;font-family:var(--sans)}
   </style>
 </head>
 <body>
@@ -337,8 +323,7 @@ let S = {
   addingTxn:     null,
   editingDebt:   null,
   editingYearly: null,
-  showBackup:    false,
-  syncStatus:    "idle", // idle | syncing | synced | error
+  syncStatus:    "idle",
 };
 
 // ── Storage keys ──────────────────────────────────────────────────────────────
@@ -425,26 +410,10 @@ function getAllLocalData() {
 
 function setSyncStatus(status) {
   S.syncStatus = status;
-  // Update dot without full re-render
-  const dot = document.getElementById("sync-dot");
+  const dot = document.getElementById("sync-indicator");
   if (dot) {
-    dot.className = "sync-dot " + status;
+    dot.className = "sync-indicator " + status;
   }
-  // Also refresh text in backup panel if open
-  const statusText = document.getElementById("sync-status-text");
-  if (statusText) {
-    const dot2 = document.getElementById("bk-sync-dot");
-    if (dot2) dot2.className = "bk-status-dot " + status;
-    statusText.textContent = syncStatusLabel();
-  }
-}
-
-function syncStatusLabel() {
-  if (!SCRIPT_URL) return "Sheets sync not configured";
-  if (S.syncStatus === "syncing") return "Syncing…";
-  if (S.syncStatus === "synced")  return "Synced to Google Sheets";
-  if (S.syncStatus === "error")   return "Sync failed — check connection";
-  return "Not yet synced this session";
 }
 
 function scheduleSyncToSheets() {
@@ -489,38 +458,6 @@ async function syncFromSheets() {
   }
 }
 
-// ── Manual export / import (backup panel) ────────────────────────────────────
-function exportDataNow() {
-  const payload = { version:2, year:S.year, data:S.data, notes:S.notes,
-    expDefs:S.expDefs, incDefs:S.incDefs, debt:S.debt, yearlyDefs:S.yearlyDefs, links:S.links };
-  const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));
-  const a = Object.assign(document.createElement("a"), { href:url, download:`morcego-${S.year}.json` });
-  a.click(); URL.revokeObjectURL(url);
-}
-
-function importData(file) {
-  const r = new FileReader();
-  r.onload = e => {
-    try {
-      const d = JSON.parse(e.target.result);
-      if (d.version !== 1 && d.version !== 2) { alert("Unrecognized format"); return; }
-      if (!confirm(`Restore data for ${d.year||"?"}? This overwrites current data.`)) return;
-      if (d.data)       { S.data       = d.data;       sv("data"); }
-      if (d.notes)      { S.notes      = d.notes;      sv("notes"); }
-      if (d.expDefs)    { S.expDefs    = d.expDefs;    sv("exp"); }
-      if (d.incDefs)    { S.incDefs    = d.incDefs;    sv("inc"); }
-      if (d.debt)       { S.debt       = d.debt;       sv("debt"); }
-      if (d.yearlyDefs) { S.yearlyDefs = d.yearlyDefs; sv("yearly"); }
-      if (d.links)      { S.links      = d.links;      sv("links"); }
-      if (d.year)       S.year = d.year;
-      S.showBackup = false;
-      migrateTransactions();
-      render();
-    } catch(err) { alert("Restore failed: " + err.message); }
-  };
-  r.readAsText(file);
-}
-
 // ── Per-month projected values ────────────────────────────────────────────────
 function getProjectedForMonth(type, id, m) {
   const p = S.data[m]?.proj?.[type]?.[id];
@@ -560,7 +497,6 @@ function getCatActual(type, catId, m) {
 }
 
 function addTxn(type, catId, name, amount, date, notes) {
-  ensureSnapshot();
   if (!S.data[S.month])                  S.data[S.month]               = {};
   if (!S.data[S.month].transactions)     S.data[S.month].transactions  = [];
   S.data[S.month].transactions.push({
@@ -607,7 +543,6 @@ function updateDef(t, id, field, value) {
   else if (field === "proj") {
     const n = parseFloat(value) || 0;
     def.projected = n;
-    setProjected(t, id, n);
     sv(t);
   }
   else if (field === "due") { const n = parseInt(value); def.due = (n>=1&&n<=31)?n:undefined; sv(t); }
@@ -620,7 +555,6 @@ function addrow(t) {
   const row = { id:t[0]+Date.now(), label:n.value.trim(), projected:parseFloat(p?.value)||0 };
   if (t === "exp" && d?.value) { const v = parseInt(d.value); if (v>=1&&v<=31) row.due = v; }
   (t === "exp" ? S.expDefs : S.incDefs).push(row);
-  setProjected(t, row.id, row.projected);
   sv(t);
   n.value=""; if(p) p.value=""; if(d) d.value="";
   renderContent();
@@ -686,7 +620,6 @@ function rbgt() {
   function erow(type, def) {
     const isExp = type === "exp";
     const proj  = getProjected(type, def.id);
-    const hasMonthProj = S.data[S.month]?.proj?.[type]?.[def.id] !== undefined;
     return '<div class="erow">' +
       '<div class="erow-top">' +
         '<button class="delbtn" data-dx="'+type+'|'+def.id+'">−</button>' +
@@ -697,7 +630,6 @@ function rbgt() {
         '<input class="eproj" type="number" inputmode="decimal" value="'+proj+'" data-ef="'+type+'|'+def.id+'|proj"/>' +
         (isExp ? '<span class="ehint">due day</span><input class="edue" type="number" inputmode="numeric" value="'+(def.due||"")+'" placeholder="—" data-ef="'+type+'|'+def.id+'|due"/>' : '') +
       '</div>' +
-      (hasMonthProj ? '<div class="eproj-note">Saved for '+MONTHS[S.month]+'</div>' : '') +
     '</div>';
   }
 
@@ -796,7 +728,7 @@ function rbgt() {
 
   const netLabel = t.hasAct ? MONTHS[S.month] : MONTHS[S.month];
 
-  return (em ? '<div class="edit-banner"><i class="ti ti-pencil"></i> Edit mode — changes to projections are saved for '+MONTHS[S.month]+'</div>' : "") +
+  return (em ? '<div class="edit-banner"><i class="ti ti-pencil"></i> Edit mode</div>' : "") +
     '<div class="ncard '+(pos?"pos":"neg")+'">' +
       '<div class="n-top">' +
         '<span class="n-month '+(pos?"pos":"neg")+'">'+netLabel+'</span>' +
@@ -881,56 +813,26 @@ function renderYear() {
 }
 
 function renderLinks() {
-  const em = S.editMode;
   const linkCards = S.links.map(l =>
     '<div class="link-card">' +
       '<a class="link-anchor" href="'+esc(l.url)+'" target="_blank" rel="noopener noreferrer">' +
         '<div class="link-lbl">'+esc(l.label)+'</div>' +
         '<div class="link-url">'+esc(l.url)+'</div>' +
       '</a>' +
-      (em ? '<button class="dxbtn" data-ldel="'+l.id+'">×</button>' : '') +
+      '<button class="dxbtn" data-ldel="'+l.id+'">×</button>' +
     '</div>'
   ).join("");
 
-  const addForm = em ?
-    '<div class="card">' +
-      '<div class="addrow" style="flex-direction:column;align-items:stretch;gap:6px">' +
-        '<input class="ename" id="new-link-name" type="text" placeholder="Link name (e.g. Food Plan)"/>' +
-        '<div style="display:flex;gap:6px">' +
-          '<input class="ename" id="new-link-url" type="url" placeholder="https://…" style="flex:1"/>' +
-          '<button class="addbtn" id="do-add-link"><i class="ti ti-plus"></i></button>' +
-        '</div>' +
+  return '<div class="card">' +
+    linkCards +
+    '<div class="addrow">' +
+      '<input class="ename" id="new-link-name" type="text" placeholder="Link name (e.g. Food Plan)" style="flex:1"/>' +
+      '<div style="display:flex;gap:6px">' +
+        '<input class="ename" id="new-link-url" type="url" placeholder="https://…" style="flex:1"/>' +
+        '<button class="addbtn" id="do-add-link"><i class="ti ti-plus"></i></button>' +
       '</div>' +
-    '</div>' : "";
-
-  return (S.links.length ? '<div class="card">'+linkCards+'</div>' :
-    '<div class="link-empty">No links yet.<br>Turn on edit mode to add links.</div>') + addForm;
-}
-
-function renderBackupPanel() {
-  if (!S.showBackup) return "";
-  const syncConfigured = !!SCRIPT_URL;
-  const syncRow = syncConfigured
-    ? '<div class="bk-status-row">' +
-        '<div id="bk-sync-dot" class="bk-status-dot '+S.syncStatus+'"></div>' +
-        '<span id="sync-status-text" class="bk-status-text">'+syncStatusLabel()+'</span>' +
-      '</div>'
-    : '<div class="bk-status-row">' +
-        '<div class="bk-status-dot idle"></div>' +
-        '<span class="bk-status-text">Google Sheets sync not set up</span>' +
-      '</div>';
-
-  return '<div class="bk-overlay" id="bk-overlay">' +
-    '<div class="bk-panel">' +
-      '<div class="bk-title">Backup &amp; Sync</div>' +
-      '<div class="bk-subtitle">Data is stored on this device. Export to keep a file copy.</div>' +
-      syncRow +
-      '<button class="bk-btn" id="bk-export"><i class="ti ti-download"></i>Export to file</button>' +
-      '<button class="bk-btn" id="bk-import-btn"><i class="ti ti-upload"></i>Restore from file…</button>' +
-      '<input type="file" id="bk-import-file" accept=".json" style="display:none"/>' +
-      '<button class="bk-close" id="bk-close">Close</button>' +
     '</div>' +
-  '</div>';
+  '</div>' + (S.links.length === 0 ? '<div class="link-empty">No links yet.<br>Use the form below to add links.</div>' : '');
 }
 
 // ── Event wiring ──────────────────────────────────────────────────────────────
@@ -1036,17 +938,6 @@ function wireContent() {
     const u = document.getElementById("new-link-url");
     if (n && u) { addLink(n.value, u.value); n.value=""; u.value=""; }
   });
-
-  // Backup panel
-  document.getElementById("bk-overlay")?.addEventListener("click", e => {
-    if (e.target.id === "bk-overlay") { S.showBackup=false; renderContent(); }
-  });
-  document.getElementById("bk-close")?.addEventListener("click", () => { S.showBackup=false; renderContent(); });
-  document.getElementById("bk-export")?.addEventListener("click", exportDataNow);
-  const bkImportBtn  = document.getElementById("bk-import-btn");
-  const bkImportFile = document.getElementById("bk-import-file");
-  bkImportBtn?.addEventListener("click", () => bkImportFile?.click());
-  bkImportFile?.addEventListener("change", e => { if(e.target.files[0]) importData(e.target.files[0]); });
 }
 
 function renderContent() {
@@ -1057,7 +948,7 @@ function renderContent() {
     S.view==="year"   ? renderYear() :
     S.view==="links"  ? renderLinks() :
     rdebt()
-  ) + renderBackupPanel();
+  );
   wireContent();
 }
 
@@ -1075,21 +966,16 @@ function render() {
         '<button class="year-arrow" id="yr-prev"><i class="ti ti-chevron-left"></i></button>' +
         '<span class="year-lbl">'+S.year+'</span>' +
         '<button class="year-arrow" id="yr-next"><i class="ti ti-chevron-right"></i></button>' +
+        '<span id="sync-indicator" class="sync-indicator '+S.syncStatus+'"></span>' +
       '</div>' +
       '<div style="flex:1"></div>' +
-      '<button class="icobtn" id="bkbtn" title="Backup &amp; Sync">' +
-        '<i class="ti ti-database"></i>' +
-        '<span id="sync-dot" class="sync-dot '+(SCRIPT_URL?S.syncStatus:"")+'"></span>' +
-      '</button>' +
-      '<button class="icobtn'+(S.editMode?" edit-on":"")+'" id="edtbtn">' +
-        '<i class="ti '+(S.editMode?"ti-check":"ti-pencil")+'"></i>' +
-      '</button>' +
+      (S.view==="budget" ? '<button class="icobtn'+(S.editMode?" edit-on":"")+'" id="edtbtn"><i class="ti '+(S.editMode?"ti-check":"ti-pencil")+'"></i></button>' : '') +
     '</div>' +
     '<div class="tabs">' +
       '<button class="tbtn'+(S.view==="budget"?" on":"")+'" data-vw="budget">Monthly</button>' +
       '<button class="tbtn'+(S.view==="year"?" on":"")+'" data-vw="year"'+(S.editMode?' disabled':'')+'>Year</button>' +
       '<button class="tbtn'+(S.view==="debt"?" on":"")+'" data-vw="debt"'+(S.editMode?' disabled':'')+'>Debt</button>' +
-      '<button class="tbtn'+(S.view==="links"?" on":"")+'" data-vw="links">Links</button>' +
+      '<button class="tbtn'+(S.view==="links"?" on":"")+'" data-vw="links"'+(S.editMode?' disabled':'')+'>Links</button>' +
     '</div>' +
     (S.view==="budget" ? '<div class="mscroll">'+mt+'</div>' : '') +
     '<div id="mc">'+(
@@ -1097,7 +983,7 @@ function render() {
       S.view==="year"   ? renderYear() :
       S.view==="links"  ? renderLinks() :
       rdebt()
-    )+renderBackupPanel()+'</div>';
+    )+'</div>';
 
   app.querySelectorAll("[data-m]").forEach(b =>
     b.addEventListener("click", () => {
@@ -1106,7 +992,7 @@ function render() {
     })
   );
   app.querySelectorAll("[data-vw]").forEach(b =>
-    b.addEventListener("click", () => { if (S.editMode && b.dataset.vw !== "budget") return; S.view=b.dataset.vw; S.expanded=null; S.addingTxn=null; render(); })
+    b.addEventListener("click", () => { if (S.editMode) S.editMode = false; S.view=b.dataset.vw; S.expanded=null; S.addingTxn=null; render(); })
   );
   document.getElementById("yr-prev").addEventListener("click", () => { S.year--; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
   document.getElementById("yr-next").addEventListener("click", () => { S.year++; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
@@ -1115,7 +1001,6 @@ function render() {
     if (S.editMode) S.view = "budget";
     S.expanded=null; S.addingTxn=null; render();
   });
-  document.getElementById("bkbtn").addEventListener("click", () => { S.showBackup=true; renderContent(); });
   wireContent();
 }
 
@@ -1124,7 +1009,6 @@ migrateOldKeys();
 loadState();
 migrateTransactions();
 render();
-// Load from Sheets in the background after initial render
 syncFromSheets();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
