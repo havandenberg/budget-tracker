@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Morcego" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>Morcego Budget</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css" />
+  <style>
+    :root {
+      --bg:            #ffffff;
+      --bg2:           #f5f5f7;
+      --bg3:           #ebebed;
+      --text:          #1c1c1e;
+      --text2:         #636366;
+      --text3:         #aeaeb2;
+      --border:        rgba(0,0,0,0.10);
+      --border2:       rgba(0,0,0,0.20);
+      --success-bg:    #d4edda;
+      --success-text:  #155724;
+      --danger-bg:     #f8d7da;
+      --danger-text:   #721c24;
+      --warn-bg:       #fff3cd;
+      --warn-text:     #856404;
+      --warn-border:   #ffc107;
+      --accent:        #a855f7;
+      --accent-bg:     #f3e8ff;
+      --accent-text:   #7e22ce;
+      --accent-border: #d8b4fe;
+      --card-shadow:      0 1px 4px rgba(0,0,0,0.06), 0 0 0 .5px rgba(0,0,0,0.05);
+      --ncard-pos-bg:     linear-gradient(140deg,#cff0d8,#bde8ca);
+      --ncard-pos-shadow: 0 4px 20px rgba(21,87,36,0.10);
+      --ncard-pos-text:   #155724;
+      --ncard-neg-bg:     linear-gradient(140deg,#fce4e6,#f8d2d5);
+      --ncard-neg-shadow: 0 4px 20px rgba(114,28,36,0.08);
+      --ncard-neg-text:   #721c24;
+      --mocard-neg-bg:    var(--danger-bg);
+      --mneg-text:        var(--danger-text);
+      --mono: 'SF Mono','Fira Code','Courier New',monospace;
+      --sans: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      --r:  10px;
+      --rl: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:            #0f0f12;
+        --bg2:           #1c1c22;
+        --bg3:           #242429;
+        --text:          #f0f0f5;
+        --text2:         #9494a8;
+        --text3:         #50505f;
+        --border:        rgba(255,255,255,0.07);
+        --border2:       rgba(255,255,255,0.15);
+        --success-bg:    #0b2216;
+        --success-text:  #4ade80;
+        --danger-bg:     #200b14;
+        --danger-text:   #f87171;
+        --warn-bg:       #281c04;
+        --warn-text:     #fbbf24;
+        --warn-border:   #7a5800;
+        --accent-bg:     #28103e;
+        --accent-text:   #c084fc;
+        --accent-border: #6d28d9;
+        --card-shadow:      0 2px 16px rgba(0,0,0,0.55), inset 0 0 0 .5px rgba(255,255,255,0.04);
+        --ncard-pos-bg:     linear-gradient(140deg,#0a2515,#122d1c);
+        --ncard-pos-shadow: 0 8px 32px rgba(74,222,128,0.12), inset 0 0 0 1px rgba(74,222,128,0.09);
+        --ncard-pos-text:   #4ade80;
+        --ncard-neg-bg:     linear-gradient(140deg,#180830,#20093c);
+        --ncard-neg-shadow: 0 8px 32px rgba(168,85,247,0.18), inset 0 0 0 1px rgba(168,85,247,0.12);
+        --ncard-neg-text:   #c084fc;
+        --mocard-neg-bg:    #180830;
+        --mneg-text:        #c084fc;
+      }
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg3);font-family:var(--sans);min-height:100vh}
+    @media (prefers-color-scheme: dark){
+      body{background:radial-gradient(ellipse at 50% -5%,#1e0838 0%,#0f0f12 55%)}
+    }
+    .app{padding:12px;max-width:480px;margin:0 auto;padding-bottom:48px}
+
+    /* Top bar */
+    .topbar{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding-top:8px}
+    .app-icon-emoji{font-size:22px;flex-shrink:0;line-height:1}
+    .title{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.5px}
+    .icobtn{width:38px;height:38px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .15s,color .15s;position:relative}
+    .icobtn.edit-on{background:var(--warn-bg);color:var(--warn-text);border-color:var(--warn-border)}
+
+    /* Sync dot on backup button */
+    .sync-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;display:none}
+    .sync-dot.syncing{display:block;background:#fbbf24;animation:pulse .8s ease-in-out infinite alternate}
+    .sync-dot.synced{display:block;background:#4ade80}
+    .sync-dot.error{display:block;background:#f87171}
+    @keyframes pulse{from{opacity:.4}to{opacity:1}}
+
+    /* Year nav */
+    .year-nav{display:flex;align-items:center;gap:6px;margin-left:8px}
+    .year-lbl{font-size:14px;font-weight:700;color:var(--text);min-width:38px;text-align:center;letter-spacing:-.3px}
+    .year-arrow{width:26px;height:26px;font-size:13px;border-radius:8px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+
+    /* View tabs */
+    .tabs{display:flex;background:var(--bg2);border-radius:var(--r);padding:3px;margin-bottom:12px;gap:2px}
+    .tbtn{flex:1;padding:7px 4px;font-size:13px;border:1.5px solid transparent;border-radius:8px;cursor:pointer;background:transparent;color:var(--text2);font-family:var(--sans);font-weight:500;transition:background .15s,color .15s,border-color .15s}
+    .tbtn.on{background:linear-gradient(135deg,var(--accent-bg),rgba(168,85,247,0.06));color:var(--accent-text);border-color:var(--accent-border);font-weight:700}
+    .tbtn:disabled{opacity:0.35;cursor:not-allowed}
+
+    /* Month tabs */
+    .mscroll{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none}
+    .mscroll::-webkit-scrollbar{display:none}
+    .mbtn{flex-shrink:0;padding:9px 15px;font-size:15px;border-radius:var(--r);cursor:pointer;border:1.5px solid transparent;background:transparent;color:var(--text3);font-family:var(--sans);transition:background .15s,color .15s,border-color .15s}
+    .mbtn.hd{color:var(--text2)}
+    .mbtn.on{background:linear-gradient(135deg,var(--accent-bg),rgba(168,85,247,0.05));color:var(--accent-text);border-color:var(--accent-border);font-weight:700}
+
+    /* Edit banner */
+    .edit-banner{background:var(--warn-bg);color:var(--warn-text);padding:11px 15px;font-size:14px;font-weight:500;margin-bottom:12px;border-radius:12px;display:flex;align-items:center;gap:8px;border:1px solid var(--warn-border)}
+
+    /* Net card */
+    .ncard{border-radius:18px;padding:18px 22px;margin-bottom:16px}
+    .ncard.pos{background:var(--ncard-pos-bg);box-shadow:var(--ncard-pos-shadow)}
+    .ncard.neg{background:var(--ncard-neg-bg);box-shadow:var(--ncard-neg-shadow)}
+    .n-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+    .n-month{font-size:20px;font-weight:700;letter-spacing:.01em}
+    .n-month.pos{color:var(--ncard-pos-text)}.n-month.neg{color:var(--ncard-neg-text)}
+    .nval{font-size:46px;font-weight:700;font-family:var(--mono);letter-spacing:-2.5px;line-height:1.05}
+    .nval.pos{color:var(--ncard-pos-text)}.nval.neg{color:var(--ncard-neg-text)}
+
+    /* Cards */
+    .card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden;box-shadow:var(--card-shadow)}
+    .chead{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;background:var(--bg2);border-bottom:.5px solid var(--border)}
+    .chead.em{background:var(--warn-bg)}
+    .clbl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em}
+    .chead.em .clbl{color:var(--warn-text)}
+    .chead-vals{display:flex;align-items:baseline;gap:6px}
+    .ctot{font-size:16px;font-weight:600;font-family:var(--mono);color:var(--text)}
+    .cproj{font-size:12px;color:var(--text2);font-family:var(--mono)}
+
+    /* Column layout */
+    .c-proj{width:76px;text-align:right;flex-shrink:0}
+    .c-act{width:110px;display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-shrink:0}
+    .chdr-row{display:flex;align-items:center;padding:6px 15px 2px;gap:10px}
+    .chdr-lbl{font-size:11px;color:var(--text3)}
+
+    /* Category rows */
+    .row-wrap{border-bottom:.5px solid var(--border)}
+    .row-wrap:last-child{border-bottom:none}
+    .row{display:flex;align-items:center;padding:11px 15px;min-height:52px;gap:10px;cursor:pointer;user-select:none;transition:background .1s}
+    .row:active{background:var(--bg2)}
+    .row.ob{background:var(--danger-bg);box-shadow:inset 3px 0 0 var(--danger-text)}
+    .row.ob:active{background:var(--danger-bg)}
+    .rleft{flex:1;min-width:0}
+    .rname{font-size:16px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .rdue{font-size:11px;color:var(--text3);margin-top:2px}
+    .rnote{font-size:11px;color:var(--text3);font-style:italic;margin-top:2px}
+    .pamt{font-size:14px;color:var(--text2);font-family:var(--mono)}
+    .cat-actual{font-size:16px;font-weight:500;font-family:var(--mono);color:var(--text)}
+    .cat-actual.dim{color:var(--text3)}
+    .cat-actual.over{color:var(--danger-text)}
+    .cat-chev{font-size:13px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+    .cat-chev.open{transform:rotate(90deg)}
+
+    /* Progress bar */
+    .prog-wrap{height:3px;background:var(--bg3);border-radius:2px;margin-top:5px;overflow:hidden}
+    .prog-fill{height:3px;border-radius:2px;transform-origin:left center;animation:barGrow .5s cubic-bezier(.25,.46,.45,.94) both}
+    @keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+    /* Transaction section */
+    .txn-section{background:var(--bg2);border-top:.5px solid var(--border)}
+    .txn-row{display:flex;align-items:center;padding:9px 15px 9px 28px;border-bottom:.5px solid var(--border);gap:8px}
+    .txn-row:last-of-type{border-bottom:none}
+    .txn-info{flex:1;min-width:0}
+    .txn-name{font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .txn-meta{font-size:11px;color:var(--text3);margin-top:2px}
+    .txn-amt{font-size:15px;font-family:var(--mono);font-weight:500;color:var(--text);flex-shrink:0}
+    .txn-del{width:26px;height:26px;border-radius:7px;border:none;background:transparent;color:var(--text3);cursor:pointer;flex-shrink:0;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
+    .txn-del:active{background:var(--danger-bg);color:var(--danger-text)}
+
+    /* Add transaction */
+    .txn-add-btn{display:flex;align-items:center;gap:6px;padding:10px 15px 10px 28px;color:var(--accent-text);font-size:13px;font-weight:500;background:transparent;border:none;cursor:pointer;width:100%;font-family:var(--sans)}
+    .txn-form{padding:12px 15px;display:flex;flex-direction:column;gap:8px;border-top:.5px solid var(--border)}
+    .txn-form-row{display:flex;gap:8px}
+    .txn-inp{font-size:15px;padding:8px 10px;border-radius:8px;border:.5px solid var(--border2);background:var(--bg);color:var(--text);outline:none;font-family:var(--sans);width:100%}
+    .txn-inp:focus{border-color:var(--accent-border)}
+    .txn-inp.amt{font-family:var(--mono);text-align:right;width:110px;flex-shrink:0}
+    .txn-inp.dt{width:140px;flex-shrink:0;font-family:var(--mono)}
+    .txn-inp.fl{flex:1;width:auto}
+    .txn-form-btns{display:flex;gap:8px;justify-content:flex-end}
+    .txn-save{padding:8px 18px;border-radius:9px;border:none;background:var(--accent-bg);color:var(--accent-text);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+    .txn-cancel{padding:8px 14px;border-radius:9px;border:.5px solid var(--border2);background:transparent;color:var(--text2);font-size:14px;cursor:pointer;font-family:var(--sans)}
+
+    /* Edit mode rows */
+    .erow{padding:10px 15px;border-bottom:.5px solid var(--border)}
+    .erow:last-child{border-bottom:none}
+    .erow-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .erow-bot{display:flex;align-items:center;gap:8px;padding-left:38px}
+    .delbtn{width:30px;height:30px;border-radius:8px;border:none;background:var(--danger-bg);color:var(--danger-text);cursor:pointer;flex-shrink:0;font-size:22px;display:flex;align-items:center;justify-content:center;line-height:1}
+    .ename{flex:1;min-width:0;font-size:16px;padding:8px 10px;border-radius:8px;border:.5px solid var(--border2);background:var(--bg);color:var(--text);outline:none;font-family:var(--sans)}
+    .eproj{width:96px;font-size:16px;padding:7px 9px;text-align:right;border-radius:8px;border:.5px solid var(--border2);background:var(--bg);color:var(--text);outline:none;font-family:var(--mono);-webkit-appearance:none}
+    .edue{width:56px;font-size:16px;padding:7px 6px;text-align:center;border-radius:8px;border:.5px solid var(--border2);background:var(--bg);color:var(--text);outline:none;font-family:var(--mono);-webkit-appearance:none}
+    .ehint{font-size:12px;color:var(--text3);flex-shrink:0;white-space:nowrap}
+    .eproj-note{font-size:10px;color:var(--accent-text);padding-left:38px;margin-top:-4px;margin-bottom:4px;opacity:.8}
+
+    /* Add row (edit mode) */
+    .addrow{display:flex;align-items:center;gap:8px;padding:10px 15px;background:var(--bg2);border-top:.5px solid var(--border)}
+    .addbtn{width:34px;height:34px;border-radius:9px;border:none;background:var(--accent-bg);color:var(--accent-text);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}
+    .einp{width:110px;padding:8px 10px;text-align:right;font-size:18px;font-family:var(--mono);font-weight:500;border-radius:9px;border:1.5px solid var(--accent-border);background:var(--bg);color:var(--text);outline:none;display:block}
+
+    /* Notes */
+    .notes-lbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;padding-left:2px}
+    .ntxt{width:100%;padding:12px 15px;font-size:16px;font-family:var(--sans);color:var(--text);background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);outline:none;resize:none;min-height:72px;margin-bottom:12px;box-shadow:var(--card-shadow);transition:border-color .15s}
+    .ntxt:focus{border-color:var(--accent-border)}
+    .ntxt::placeholder{color:var(--text3)}
+
+    /* Debt / Yearly rows */
+    .drow{display:flex;align-items:center;padding:12px 15px;border-bottom:.5px solid var(--border);gap:8px;min-height:52px}
+    .drow:last-child{border-bottom:none}
+    .dlbl{flex:1;font-size:16px;color:var(--text)}
+    .damt{min-width:110px;padding:8px 10px;text-align:right;font-size:18px;font-family:var(--mono);font-weight:500;border-radius:9px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;-webkit-appearance:none;display:block;transition:background .1s}
+    .dxbtn{width:34px;height:34px;border-radius:9px;border:none;background:var(--danger-bg);color:var(--danger-text);cursor:pointer;flex-shrink:0;font-size:22px;display:flex;align-items:center;justify-content:center;line-height:1}
+
+    /* Year overview */
+    .ovgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+    .mocard{border-radius:13px;padding:13px 8px 10px;cursor:pointer;border:2px solid transparent;text-align:center;background:var(--bg);transition:transform .12s,opacity .12s;box-shadow:var(--card-shadow)}
+    .mocard:active{transform:scale(0.94);opacity:.85}
+    .mocard.mpos{background:var(--success-bg)}
+    .mocard.mneg{background:var(--mocard-neg-bg)}
+    .mocard.mcur{border-color:var(--accent)}
+    .mocard-m{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:.01em}
+    .mocard-v{font-size:13px;font-family:var(--mono);font-weight:700;letter-spacing:-.4px}
+    .mocard-v.mpos{color:var(--success-text)}
+    .mocard-v.mneg{color:var(--mneg-text)}
+    .mocard-p{font-size:9px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+
+    /* Quick links */
+    .link-card{display:flex;align-items:center;padding:14px 15px;border-bottom:.5px solid var(--border);gap:10px}
+    .link-card:last-child{border-bottom:none}
+    .link-anchor{flex:1;text-decoration:none;min-width:0;display:block}
+    .link-lbl{font-size:16px;color:var(--text);font-weight:500}
+    .link-url{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .link-empty{text-align:center;padding:48px 24px;color:var(--text3);font-size:15px;line-height:1.6}
+
+    /* Backup / sync panel overlay */
+    .bk-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:flex;align-items:flex-end;justify-content:center}
+    .bk-panel{background:var(--bg);border-radius:18px 18px 0 0;padding:20px 20px 36px;width:100%;max-width:480px}
+    .bk-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+    .bk-subtitle{font-size:13px;color:var(--text3);margin-bottom:16px}
+    .bk-btn{display:flex;align-items:center;gap:10px;width:100%;padding:13px 15px;margin-bottom:8px;border-radius:12px;border:.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:15px;cursor:pointer;text-align:left;font-family:var(--sans);font-weight:500}
+    .bk-btn i{font-size:18px;color:var(--text3);flex-shrink:0}
+    .bk-status-row{display:flex;align-items:center;gap:10px;padding:12px 15px;border-radius:12px;background:var(--bg2);border:.5px solid var(--border2);margin-bottom:8px}
+    .bk-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .bk-status-dot.synced{background:#4ade80}
+    .bk-status-dot.syncing{background:#fbbf24;animation:pulse .8s ease-in-out infinite alternate}
+    .bk-status-dot.error{background:#f87171}
+    .bk-status-dot.idle{background:var(--text3)}
+    .bk-status-text{font-size:14px;color:var(--text2)}
+    .bk-close{display:block;width:100%;padding:13px;margin-top:4px;border-radius:12px;border:.5px solid var(--border2);background:transparent;color:var(--text3);font-size:15px;cursor:pointer;font-family:var(--sans)}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div style="padding:40px;text-align:center;color:var(--text3)">Loading…</div>
+</div>
+
+<script>
+// ── Google Sheets sync URL ────────────────────────────────────────────────────
+// Paste your Apps Script deployment URL here after setup:
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOffSsISGDobjQLWBYFSUoxwNavKc6GEYWU_g8tOsQ0je7JKutyelBT9KXDnGSVUS7/exec";
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+const storage = {
+  get:  k => { try { const v = localStorage.getItem(k); return v ? { value: v } : null; } catch(e) { return null; } },
+  set:  (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} },
+  keys: () => { try { return Array.from({length:localStorage.length},(_,i)=>localStorage.key(i)).filter(Boolean); } catch(e) { return []; } }
+};
+
+// ── Default data ──────────────────────────────────────────────────────────────
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+const DEF_EXP = [
+  { id:"rent",          label:"Rent",          projected:1500, due:1  },
+  { id:"oil",           label:"Oil",           projected:60         },
+  { id:"electric",      label:"Electric",      projected:200        },
+  { id:"internet",      label:"Internet",      projected:95,  due:13 },
+  { id:"food",          label:"Food",          projected:450        },
+  { id:"phone",         label:"Phone",         projected:67,  due:19 },
+  { id:"gym",           label:"Gym",           projected:25,  due:17 },
+  { id:"gas",           label:"Gas",           projected:120        },
+  { id:"netflix",       label:"Netflix",       projected:8,   due:23 },
+  { id:"bluecheck",     label:"Blue Check",    projected:15,  due:4  },
+  { id:"tattoo_studio", label:"Tattoo Studio", projected:750, due:1  },
+  { id:"savings",       label:"Savings",       projected:250        },
+];
+const DEF_INC = [
+  { id:"tattooing",      label:"Tattooing",     projected:1500 },
+  { id:"capoeira",       label:"Capoeira",      projected:1560 },
+  { id:"performance",    label:"Performance",   projected:500  },
+  { id:"vertical_black", label:"Vertical Black",projected:2000 },
+];
+const DEF_DEBT = [
+  { id:"paypal_cc", label:"PayPal CC", amount:500  },
+  { id:"ex",        label:"Ex",        amount:1100 },
+];
+const DEF_YEARLY = [
+  { id:"car_ins",    label:"Car Insurance",    amount:1200 },
+  { id:"tattoo_ins", label:"Tattoo Insurance", amount:1060 },
+  { id:"taxes",      label:"Taxes",            amount:560  },
+  { id:"gym_yr",     label:"Gym (annual)",     amount:50   },
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fmt = n => "$" + Math.round(Math.abs(n)).toLocaleString();
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const ord = n => n + (n===1||n===21||n===31?"st":n===2||n===22?"nd":n===3||n===23?"rd":"th");
+const fmtDate = s => {
+  if (!s) return "";
+  const d = new Date(s + "T12:00:00");
+  return isNaN(d) ? "" : d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let S = {
+  year:          new Date().getFullYear(),
+  month:         new Date().getMonth(),
+  view:          "budget",
+  editMode:      false,
+  data:          {},
+  expDefs:       DEF_EXP.map(e => ({...e})),
+  incDefs:       DEF_INC.map(i => ({...i})),
+  debt:          DEF_DEBT.map(d => ({...d})),
+  yearlyDefs:    DEF_YEARLY.map(y => ({...y})),
+  links:         [],
+  notes:         {},
+  expanded:      null,
+  addingTxn:     null,
+  editingDebt:   null,
+  editingYearly: null,
+  showBackup:    false,
+  syncStatus:    "idle", // idle | syncing | synced | error
+};
+
+// ── Storage keys ──────────────────────────────────────────────────────────────
+const dataKey  = y => `mb:${y}:data`;
+const notesKey = y => `mb:${y}:notes`;
+
+// ── Persistence ───────────────────────────────────────────────────────────────
+function migrateOldKeys() {
+  const y = new Date().getFullYear();
+  if (!storage.get(dataKey(y))) {
+    const old = storage.get("mb:data");
+    if (old) storage.set(dataKey(y), old.value);
+  }
+  if (!storage.get(notesKey(y))) {
+    const old = storage.get("mb:notes");
+    if (old) storage.set(notesKey(y), old.value);
+  }
+}
+
+function migrateTransactions() {
+  let changed = false;
+  Object.keys(S.data).forEach(m => {
+    const md = S.data[m];
+    if (!md || md.transactions) return;
+    if (!md.exp && !md.inc) return;
+    const txns = [];
+    let seq = 0;
+    if (md.exp) {
+      Object.entries(md.exp).forEach(([catId, amount]) => {
+        if (amount !== null && amount !== undefined) {
+          const def = S.expDefs.find(d => d.id === catId);
+          txns.push({ id:"t"+(Date.now()+seq++)+"_"+catId, catId, type:"exp",
+            name: def?.label || "", amount: parseFloat(amount)||0, date:"", notes:"" });
+        }
+      });
+    }
+    if (md.inc) {
+      Object.entries(md.inc).forEach(([catId, amount]) => {
+        if (amount !== null && amount !== undefined) {
+          const def = S.incDefs.find(d => d.id === catId);
+          txns.push({ id:"t"+(Date.now()+seq++)+"_"+catId, catId, type:"inc",
+            name: def?.label || "", amount: parseFloat(amount)||0, date:"", notes:"" });
+        }
+      });
+    }
+    if (txns.length) {
+      S.data[m] = { transactions: txns, proj: md.proj };
+      changed = true;
+    }
+  });
+  if (changed) sv("data");
+}
+
+function loadState() {
+  const dr = storage.get(dataKey(S.year));
+  S.data  = dr ? JSON.parse(dr.value) : {};
+  const nr = storage.get(notesKey(S.year));
+  S.notes = nr ? JSON.parse(nr.value) : {};
+  const load = (k, t) => { const r = storage.get("mb:"+k); if (r) S[t] = JSON.parse(r.value); };
+  load("exp",    "expDefs");
+  load("inc",    "incDefs");
+  load("debt",   "debt");
+  load("yearly", "yearlyDefs");
+  load("links",  "links");
+}
+
+function sv(k) {
+  if (k === "data")  { storage.set(dataKey(S.year),  JSON.stringify(S.data));  scheduleSyncToSheets(); return; }
+  if (k === "notes") { storage.set(notesKey(S.year), JSON.stringify(S.notes)); scheduleSyncToSheets(); return; }
+  storage.set("mb:"+k, JSON.stringify({ exp:S.expDefs, inc:S.incDefs, debt:S.debt, yearly:S.yearlyDefs, links:S.links }[k]));
+  scheduleSyncToSheets();
+}
+
+// ── Google Sheets sync ────────────────────────────────────────────────────────
+let _syncTimer = null;
+
+function getAllLocalData() {
+  const out = {};
+  storage.keys().filter(k => k.startsWith("mb:")).forEach(k => {
+    out[k] = localStorage.getItem(k);
+  });
+  return out;
+}
+
+function setSyncStatus(status) {
+  S.syncStatus = status;
+  // Update dot without full re-render
+  const dot = document.getElementById("sync-dot");
+  if (dot) {
+    dot.className = "sync-dot " + status;
+  }
+  // Also refresh text in backup panel if open
+  const statusText = document.getElementById("sync-status-text");
+  if (statusText) {
+    const dot2 = document.getElementById("bk-sync-dot");
+    if (dot2) dot2.className = "bk-status-dot " + status;
+    statusText.textContent = syncStatusLabel();
+  }
+}
+
+function syncStatusLabel() {
+  if (!SCRIPT_URL) return "Sheets sync not configured";
+  if (S.syncStatus === "syncing") return "Syncing…";
+  if (S.syncStatus === "synced")  return "Synced to Google Sheets";
+  if (S.syncStatus === "error")   return "Sync failed — check connection";
+  return "Not yet synced this session";
+}
+
+function scheduleSyncToSheets() {
+  if (!SCRIPT_URL) return;
+  clearTimeout(_syncTimer);
+  setSyncStatus("syncing");
+  _syncTimer = setTimeout(syncToSheets, 2500);
+}
+
+async function syncToSheets() {
+  if (!SCRIPT_URL) return;
+  setSyncStatus("syncing");
+  try {
+    const payload = JSON.stringify(getAllLocalData());
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: payload,
+      headers: { "Content-Type": "text/plain" },
+    });
+    setSyncStatus("synced");
+  } catch(e) {
+    setSyncStatus("error");
+  }
+}
+
+async function syncFromSheets() {
+  if (!SCRIPT_URL) return;
+  setSyncStatus("syncing");
+  try {
+    const res = await fetch(SCRIPT_URL + "?cb=" + Date.now());
+    const allKeys = await res.json();
+    if (!allKeys || typeof allKeys !== "object") throw new Error("bad response");
+    Object.entries(allKeys).forEach(([k, v]) => {
+      if (k.startsWith("mb:") && v) localStorage.setItem(k, v);
+    });
+    loadState();
+    migrateTransactions();
+    setSyncStatus("synced");
+    render();
+  } catch(e) {
+    setSyncStatus("error");
+  }
+}
+
+// ── Manual export / import (backup panel) ────────────────────────────────────
+function exportDataNow() {
+  const payload = { version:2, year:S.year, data:S.data, notes:S.notes,
+    expDefs:S.expDefs, incDefs:S.incDefs, debt:S.debt, yearlyDefs:S.yearlyDefs, links:S.links };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));
+  const a = Object.assign(document.createElement("a"), { href:url, download:`morcego-${S.year}.json` });
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function importData(file) {
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (d.version !== 1 && d.version !== 2) { alert("Unrecognized format"); return; }
+      if (!confirm(`Restore data for ${d.year||"?"}? This overwrites current data.`)) return;
+      if (d.data)       { S.data       = d.data;       sv("data"); }
+      if (d.notes)      { S.notes      = d.notes;      sv("notes"); }
+      if (d.expDefs)    { S.expDefs    = d.expDefs;    sv("exp"); }
+      if (d.incDefs)    { S.incDefs    = d.incDefs;    sv("inc"); }
+      if (d.debt)       { S.debt       = d.debt;       sv("debt"); }
+      if (d.yearlyDefs) { S.yearlyDefs = d.yearlyDefs; sv("yearly"); }
+      if (d.links)      { S.links      = d.links;      sv("links"); }
+      if (d.year)       S.year = d.year;
+      S.showBackup = false;
+      migrateTransactions();
+      render();
+    } catch(err) { alert("Restore failed: " + err.message); }
+  };
+  r.readAsText(file);
+}
+
+// ── Per-month projected values ────────────────────────────────────────────────
+function getProjectedForMonth(type, id, m) {
+  const p = S.data[m]?.proj?.[type]?.[id];
+  return (p !== null && p !== undefined) ? p
+    : (type === "exp" ? S.expDefs : S.incDefs).find(d => d.id === id)?.projected ?? 0;
+}
+function getProjected(type, id) { return getProjectedForMonth(type, id, S.month); }
+
+function setProjected(type, id, n) {
+  if (!S.data[S.month])            S.data[S.month]            = {};
+  if (!S.data[S.month].proj)       S.data[S.month].proj       = {};
+  if (!S.data[S.month].proj[type]) S.data[S.month].proj[type] = {};
+  S.data[S.month].proj[type][id] = n;
+  sv("data");
+}
+
+function ensureSnapshot() {
+  const m = S.month;
+  if (S.data[m]?.proj) return;
+  if (!S.data[m]) S.data[m] = {};
+  S.data[m].proj = {
+    exp: Object.fromEntries(S.expDefs.map(d => [d.id, d.projected])),
+    inc: Object.fromEntries(S.incDefs.map(d => [d.id, d.projected])),
+  };
+  sv("data");
+}
+
+// ── Transaction helpers ───────────────────────────────────────────────────────
+function getCatTxns(type, catId, m) {
+  const month = m ?? S.month;
+  return (S.data[month]?.transactions || []).filter(t => t.type === type && t.catId === catId);
+}
+
+function getCatActual(type, catId, m) {
+  const txns = getCatTxns(type, catId, m);
+  return txns.length === 0 ? null : txns.reduce((s, t) => s + (t.amount || 0), 0);
+}
+
+function addTxn(type, catId, name, amount, date, notes) {
+  ensureSnapshot();
+  if (!S.data[S.month])                  S.data[S.month]               = {};
+  if (!S.data[S.month].transactions)     S.data[S.month].transactions  = [];
+  S.data[S.month].transactions.push({
+    id: "t" + Date.now(),
+    catId, type,
+    name:   (name  || "").trim(),
+    amount: parseFloat(amount) || 0,
+    date:   date   || "",
+    notes:  (notes || "").trim(),
+  });
+  sv("data");
+}
+
+function delTxn(id) {
+  if (!S.data[S.month]?.transactions) return;
+  S.data[S.month].transactions = S.data[S.month].transactions.filter(t => t.id !== id);
+  sv("data");
+}
+
+// ── Calc ──────────────────────────────────────────────────────────────────────
+function calcMonth(m) {
+  const txns = S.data[m]?.transactions || [];
+  let pe=0, ae=0, pi=0, ai=0, hasAct=false;
+  S.expDefs.forEach(e => {
+    pe += getProjectedForMonth("exp", e.id, m);
+    const cat = txns.filter(t => t.catId === e.id && t.type === "exp");
+    if (cat.length) { ae += cat.reduce((s,t) => s+(t.amount||0), 0); hasAct = true; }
+  });
+  S.incDefs.forEach(i => {
+    pi += getProjectedForMonth("inc", i.id, m);
+    const cat = txns.filter(t => t.catId === i.id && t.type === "inc");
+    if (cat.length) { ai += cat.reduce((s,t) => s+(t.amount||0), 0); hasAct = true; }
+  });
+  return { pe, ae, pi, ai, net: ai-ae, pnet: pi-pe, hasAct };
+}
+function calc() { return calcMonth(S.month); }
+function mhd(m) { return (S.data[m]?.transactions || []).length > 0; }
+
+// ── Category definition editing ───────────────────────────────────────────────
+function updateDef(t, id, field, value) {
+  const def = (t === "exp" ? S.expDefs : S.incDefs).find(d => d.id === id);
+  if (!def) return;
+  if (field === "name") { def.label = value; sv(t); }
+  else if (field === "proj") {
+    const n = parseFloat(value) || 0;
+    def.projected = n;
+    setProjected(t, id, n);
+    sv(t);
+  }
+  else if (field === "due") { const n = parseInt(value); def.due = (n>=1&&n<=31)?n:undefined; sv(t); }
+}
+function addrow(t) {
+  const n = document.getElementById("new-"+t+"-name");
+  const p = document.getElementById("new-"+t+"-proj");
+  const d = document.getElementById("new-exp-due");
+  if (!n?.value.trim()) return;
+  const row = { id:t[0]+Date.now(), label:n.value.trim(), projected:parseFloat(p?.value)||0 };
+  if (t === "exp" && d?.value) { const v = parseInt(d.value); if (v>=1&&v<=31) row.due = v; }
+  (t === "exp" ? S.expDefs : S.incDefs).push(row);
+  setProjected(t, row.id, row.projected);
+  sv(t);
+  n.value=""; if(p) p.value=""; if(d) d.value="";
+  renderContent();
+}
+function delrow(t, id) {
+  if (t === "exp") S.expDefs = S.expDefs.filter(d => d.id !== id);
+  else             S.incDefs = S.incDefs.filter(d => d.id !== id);
+  sv(t); renderContent();
+}
+
+// ── Debt ──────────────────────────────────────────────────────────────────────
+function sdedit(id) { S.editingDebt=id; renderContent(); setTimeout(()=>{ const i=document.getElementById("di"+id); if(i){i.focus();i.select();} },20); }
+function cdedit(id) {
+  const i=document.getElementById("di"+id);
+  if(i){ const d=S.debt.find(x=>x.id===id); if(d) d.amount=parseFloat(i.value)||0; sv("debt"); }
+  S.editingDebt=null; setTimeout(renderContent,0);
+}
+function adddebt() {
+  const n=document.getElementById("new-debt-name"), a=document.getElementById("new-debt-amt");
+  if(!n?.value.trim()) return;
+  S.debt.push({id:"d"+Date.now(),label:n.value.trim(),amount:parseFloat(a?.value)||0});
+  sv("debt"); renderContent();
+}
+function rmdebt(id) { S.debt=S.debt.filter(d=>d.id!==id); sv("debt"); renderContent(); }
+
+// ── Yearly expenses ───────────────────────────────────────────────────────────
+function sdeditY(id) { S.editingYearly=id; renderContent(); setTimeout(()=>{ const i=document.getElementById("yi"+id); if(i){i.focus();i.select();} },20); }
+function cdeditY(id) {
+  const i=document.getElementById("yi"+id);
+  if(i){ const d=S.yearlyDefs.find(x=>x.id===id); if(d) d.amount=parseFloat(i.value)||0; sv("yearly"); }
+  S.editingYearly=null; setTimeout(renderContent,0);
+}
+function addyearly() {
+  const n=document.getElementById("new-yr-name"), a=document.getElementById("new-yr-amt");
+  if(!n?.value.trim()) return;
+  S.yearlyDefs.push({id:"y"+Date.now(),label:n.value.trim(),amount:parseFloat(a?.value)||0});
+  sv("yearly"); renderContent();
+}
+function rmyearly(id) { S.yearlyDefs=S.yearlyDefs.filter(d=>d.id!==id); sv("yearly"); renderContent(); }
+
+// ── Links ─────────────────────────────────────────────────────────────────────
+function addLink(label, url) {
+  if (!label.trim() || !url.trim()) return;
+  let u = url.trim();
+  if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+  S.links.push({ id:"l"+Date.now(), label:label.trim(), url:u });
+  sv("links"); renderContent();
+}
+function rmlink(id) { S.links=S.links.filter(l=>l.id!==id); sv("links"); renderContent(); }
+
+// ── HTML builders ─────────────────────────────────────────────────────────────
+function rbgt() {
+  const t   = calc();
+  const net = t.hasAct ? t.net : t.pnet;
+  const pos = net >= 0;
+  const em  = S.editMode;
+
+  const chdr =
+    '<div class="chdr-row"><div style="flex:1"></div>' +
+    '<div class="c-proj chdr-lbl" style="text-align:right">projected</div>' +
+    '<div style="width:110px;text-align:right;flex-shrink:0" class="chdr-lbl">actual</div></div>';
+
+  function erow(type, def) {
+    const isExp = type === "exp";
+    const proj  = getProjected(type, def.id);
+    const hasMonthProj = S.data[S.month]?.proj?.[type]?.[def.id] !== undefined;
+    return '<div class="erow">' +
+      '<div class="erow-top">' +
+        '<button class="delbtn" data-dx="'+type+'|'+def.id+'">−</button>' +
+        '<input class="ename" type="text" value="'+esc(def.label)+'" placeholder="'+(isExp?"Expense name":"Income source")+'" data-ef="'+type+'|'+def.id+'|name"/>' +
+      '</div>' +
+      '<div class="erow-bot">' +
+        '<span class="ehint">projected $</span>' +
+        '<input class="eproj" type="number" inputmode="decimal" value="'+proj+'" data-ef="'+type+'|'+def.id+'|proj"/>' +
+        (isExp ? '<span class="ehint">due day</span><input class="edue" type="number" inputmode="numeric" value="'+(def.due||"")+'" placeholder="—" data-ef="'+type+'|'+def.id+'|due"/>' : '') +
+      '</div>' +
+      (hasMonthProj ? '<div class="eproj-note">Saved for '+MONTHS[S.month]+'</div>' : '') +
+    '</div>';
+  }
+
+  function nrow(type, def) {
+    const proj   = getProjected(type, def.id);
+    const actual = getCatActual(type, def.id, S.month);
+    const hv     = actual !== null;
+    const ob     = type === "exp" && hv && actual > proj;
+    const isOpen = S.expanded === def.id;
+    const txns   = isOpen ? getCatTxns(type, def.id, S.month) : [];
+
+    let progBar = "";
+    if (type === "exp" && hv && proj > 0) {
+      const pct   = Math.min(100, Math.round((actual / proj) * 100));
+      const color = ob ? "var(--danger-text)" : "var(--success-text)";
+      progBar = '<div class="prog-wrap"><div class="prog-fill" style="width:'+pct+'%;background:'+color+'"></div></div>';
+    }
+
+    let txnSection = "";
+    if (isOpen) {
+      const txnRows = txns.map(tx => {
+        const d = fmtDate(tx.date);
+        const meta = [d, tx.notes].filter(Boolean).join(" · ");
+        return '<div class="txn-row">' +
+          '<div class="txn-info">' +
+            (tx.name ? '<div class="txn-name">'+esc(tx.name)+'</div>' : '') +
+            (meta    ? '<div class="txn-meta">'+esc(meta)+'</div>' : '') +
+          '</div>' +
+          '<span class="txn-amt">'+fmt(tx.amount)+'</span>' +
+          '<button class="txn-del" data-tdel="'+tx.id+'">×</button>' +
+        '</div>';
+      }).join("");
+
+      let addPart;
+      if (S.addingTxn?.catId === def.id) {
+        const today = new Date();
+        const dd = (today.getFullYear() === S.year && today.getMonth() === S.month)
+          ? today.toISOString().split("T")[0]
+          : S.year+"-"+String(S.month+1).padStart(2,"0")+"-01";
+        addPart =
+          '<div class="txn-form">' +
+            '<div class="txn-form-row">' +
+              '<input class="txn-inp fl" id="txn-name" type="text" placeholder="Description (optional)" autocomplete="off"/>' +
+              '<input class="txn-inp amt" id="txn-amt" type="number" inputmode="decimal" placeholder="$0"/>' +
+            '</div>' +
+            '<div class="txn-form-row">' +
+              '<input class="txn-inp dt" id="txn-date" type="date" value="'+dd+'"/>' +
+              '<input class="txn-inp fl" id="txn-notes" type="text" placeholder="Notes (optional)" autocomplete="off"/>' +
+            '</div>' +
+            '<div class="txn-form-btns">' +
+              '<button class="txn-cancel" id="txn-cancel">Cancel</button>' +
+              '<button class="txn-save" id="txn-save" data-ttype="'+type+'" data-tcid="'+def.id+'">Add</button>' +
+            '</div>' +
+          '</div>';
+      } else {
+        addPart = '<button class="txn-add-btn" data-tadd="'+type+'|'+def.id+'">' +
+          '<i class="ti ti-plus" style="font-size:15px"></i> Add transaction' +
+        '</button>';
+      }
+      txnSection = '<div class="txn-section">'+txnRows+addPart+'</div>';
+    }
+
+    return '<div class="row-wrap">' +
+      '<div class="row'+(ob?" ob":"")+'" data-expand="'+def.id+'">' +
+        '<div class="rleft">' +
+          '<div class="rname">'+esc(def.label)+'</div>' +
+          (def.due  ? '<div class="rdue">Due '+ord(def.due)+'</div>' : '') +
+          (def.note ? '<div class="rnote">'+esc(def.note)+'</div>'  : '') +
+          progBar +
+        '</div>' +
+        '<div class="c-proj"><span class="pamt">'+fmt(proj)+'</span></div>' +
+        '<div class="c-act">' +
+          '<span class="cat-actual'+(hv ? (ob?" over":"") : " dim")+'">'+
+            (hv ? fmt(actual) : "—")+
+          '</span>' +
+          '<i class="ti ti-chevron-right cat-chev'+(isOpen?" open":"")+'"></i>' +
+        '</div>' +
+      '</div>' +
+      txnSection +
+    '</div>';
+  }
+
+  const addExpRow = em ?
+    '<div class="addrow">' +
+      '<input class="ename" id="new-exp-name" type="text" placeholder="New expense name…"/>' +
+      '<input class="eproj" id="new-exp-proj" type="number" inputmode="decimal" placeholder="$0"/>' +
+      '<input class="edue" id="new-exp-due" type="number" inputmode="numeric" placeholder="due"/>' +
+      '<button class="addbtn" id="do-add-exp"><i class="ti ti-plus"></i></button>' +
+    '</div>' : "";
+  const addIncRow = em ?
+    '<div class="addrow">' +
+      '<input class="ename" id="new-inc-name" type="text" placeholder="New income source…"/>' +
+      '<input class="eproj" id="new-inc-proj" type="number" inputmode="decimal" placeholder="$0"/>' +
+      '<button class="addbtn" id="do-add-inc"><i class="ti ti-plus"></i></button>' +
+    '</div>' : "";
+
+  const netLabel = t.hasAct ? MONTHS[S.month] : MONTHS[S.month]+" (projected)";
+
+  return (em ? '<div class="edit-banner"><i class="ti ti-pencil"></i> Edit mode — changes to projections are saved for '+MONTHS[S.month]+'</div>' : "") +
+    '<div class="ncard '+(pos?"pos":"neg")+'">' +
+      '<div class="n-top">' +
+        '<span class="n-month '+(pos?"pos":"neg")+'">'+netLabel+'</span>' +
+        '<span class="nval '+(pos?"pos":"neg")+'">'+(pos?"+":"−")+fmt(Math.abs(net))+'</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card">' +
+      '<div class="chead'+(em?" em":"")+'">' +
+        '<span class="clbl">Expenses</span>' +
+        '<div class="chead-vals"><span class="ctot">'+fmt(t.ae)+'</span><span class="cproj">/ '+fmt(t.pe)+' proj</span></div>' +
+      '</div>' +
+      (em ? "" : chdr) +
+      S.expDefs.map(e => em ? erow("exp",e) : nrow("exp",e)).join("") +
+      addExpRow +
+    '</div>' +
+    '<div class="card">' +
+      '<div class="chead'+(em?" em":"")+'">' +
+        '<span class="clbl">Income</span>' +
+        '<div class="chead-vals"><span class="ctot">'+fmt(t.ai)+'</span><span class="cproj">/ '+fmt(t.pi)+' proj</span></div>' +
+      '</div>' +
+      (em ? "" : chdr) +
+      S.incDefs.map(i => em ? erow("inc",i) : nrow("inc",i)).join("") +
+      addIncRow +
+    '</div>' +
+    '<div class="notes-lbl">Notes</div>' +
+    '<textarea class="ntxt" id="nta" placeholder="Notes for '+MONTHS[S.month]+'…" rows="3">'+esc(S.notes[S.month]||"")+'</textarea>';
+}
+
+function rdebt() {
+  const tot  = S.debt.reduce((s,d)=>s+(d.amount||0),0);
+  const ytot = S.yearlyDefs.reduce((s,y)=>s+(y.amount||0),0);
+  const debtRows = S.debt.map(d =>
+    d.id===S.editingDebt
+      ? '<div class="drow"><div class="dlbl">'+esc(d.label)+'</div><input id="di'+d.id+'" class="einp" type="number" inputmode="decimal" value="'+d.amount+'" data-did="'+d.id+'"/><button class="dxbtn" data-ddel="'+d.id+'">×</button></div>'
+      : '<div class="drow"><div class="dlbl">'+esc(d.label)+'</div><button class="damt" data-dtap="'+d.id+'">'+fmt(d.amount)+'</button><button class="dxbtn" data-ddel="'+d.id+'">×</button></div>'
+  ).join("");
+  const yearlyRows = S.yearlyDefs.map(y =>
+    y.id===S.editingYearly
+      ? '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><input id="yi'+y.id+'" class="einp" type="number" inputmode="decimal" value="'+y.amount+'" data-yid="'+y.id+'"/><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
+      : '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><button class="damt" data-ytap="'+y.id+'">'+fmt(y.amount)+'</button><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
+  ).join("");
+  return '<div class="card">' +
+    '<div class="chead"><span class="clbl">Debt</span><span class="ctot">'+fmt(tot)+'</span></div>' +
+    debtRows +
+    '<div class="addrow">' +
+      '<input class="ename" id="new-debt-name" type="text" placeholder="New debt…" style="flex:1"/>' +
+      '<input class="eproj" id="new-debt-amt" type="number" inputmode="decimal" placeholder="$0"/>' +
+      '<button class="addbtn" id="do-add-debt"><i class="ti ti-plus"></i></button>' +
+    '</div></div>' +
+    '<div class="card">' +
+    '<div class="chead"><span class="clbl">Yearly expenses</span>' +
+      '<div class="chead-vals"><span class="ctot">'+fmt(ytot)+'</span><span class="cproj">'+fmt(ytot/12)+'/mo</span></div>' +
+    '</div>' +
+    yearlyRows +
+    '<div class="addrow">' +
+      '<input class="ename" id="new-yr-name" type="text" placeholder="New yearly expense…" style="flex:1"/>' +
+      '<input class="eproj" id="new-yr-amt" type="number" inputmode="decimal" placeholder="$0"/>' +
+      '<button class="addbtn" id="do-add-yr"><i class="ti ti-plus"></i></button>' +
+    '</div></div>';
+}
+
+function renderYear() {
+  const cards = MONTHS.map((m, i) => {
+    const t   = calcMonth(i);
+    const net = t.hasAct ? t.net : t.pnet;
+    const pos = net >= 0;
+    return '<button class="mocard'+(pos?" mpos":" mneg")+(i===S.month?" mcur":"")+'" data-goto="'+i+'">' +
+      '<div class="mocard-m">'+m+'</div>' +
+      '<div class="mocard-v '+(pos?"mpos":"mneg")+'">'+(pos?"+":"−")+fmt(Math.abs(net))+'</div>' +
+      (!t.hasAct ? '<div class="mocard-p">proj</div>' : '') +
+    '</button>';
+  }).join("");
+  const yearNet = MONTHS.reduce((s,_,i)=>{ const t=calcMonth(i); return s+(t.hasAct?t.net:t.pnet); },0);
+  const ypos = yearNet >= 0;
+  return '<div class="ovgrid">'+cards+'</div>' +
+    '<div class="ncard '+(ypos?"pos":"neg")+'">' +
+      '<div class="n-top">' +
+        '<span class="n-month '+(ypos?"pos":"neg")+'">'+S.year+' total</span>' +
+        '<span class="nval '+(ypos?"pos":"neg")+'">'+(ypos?"+":"−")+fmt(Math.abs(yearNet))+'</span>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderLinks() {
+  const em = S.editMode;
+  const linkCards = S.links.map(l =>
+    '<div class="link-card">' +
+      '<a class="link-anchor" href="'+esc(l.url)+'" target="_blank" rel="noopener noreferrer">' +
+        '<div class="link-lbl">'+esc(l.label)+'</div>' +
+        '<div class="link-url">'+esc(l.url)+'</div>' +
+      '</a>' +
+      (em ? '<button class="dxbtn" data-ldel="'+l.id+'">×</button>' : '') +
+    '</div>'
+  ).join("");
+
+  const addForm = em ?
+    '<div class="card">' +
+      '<div class="addrow" style="flex-direction:column;align-items:stretch;gap:6px">' +
+        '<input class="ename" id="new-link-name" type="text" placeholder="Link name (e.g. Food Plan)"/>' +
+        '<div style="display:flex;gap:6px">' +
+          '<input class="ename" id="new-link-url" type="url" placeholder="https://…" style="flex:1"/>' +
+          '<button class="addbtn" id="do-add-link"><i class="ti ti-plus"></i></button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' : "";
+
+  return (S.links.length ? '<div class="card">'+linkCards+'</div>' :
+    '<div class="link-empty">No links yet.<br>Turn on edit mode to add links.</div>') + addForm;
+}
+
+function renderBackupPanel() {
+  if (!S.showBackup) return "";
+  const syncConfigured = !!SCRIPT_URL;
+  const syncRow = syncConfigured
+    ? '<div class="bk-status-row">' +
+        '<div id="bk-sync-dot" class="bk-status-dot '+S.syncStatus+'"></div>' +
+        '<span id="sync-status-text" class="bk-status-text">'+syncStatusLabel()+'</span>' +
+      '</div>'
+    : '<div class="bk-status-row">' +
+        '<div class="bk-status-dot idle"></div>' +
+        '<span class="bk-status-text">Google Sheets sync not set up</span>' +
+      '</div>';
+
+  return '<div class="bk-overlay" id="bk-overlay">' +
+    '<div class="bk-panel">' +
+      '<div class="bk-title">Backup &amp; Sync</div>' +
+      '<div class="bk-subtitle">Data is stored on this device. Export to keep a file copy.</div>' +
+      syncRow +
+      '<button class="bk-btn" id="bk-export"><i class="ti ti-download"></i>Export to file</button>' +
+      '<button class="bk-btn" id="bk-import-btn"><i class="ti ti-upload"></i>Restore from file…</button>' +
+      '<input type="file" id="bk-import-file" accept=".json" style="display:none"/>' +
+      '<button class="bk-close" id="bk-close">Close</button>' +
+    '</div>' +
+  '</div>';
+}
+
+// ── Event wiring ──────────────────────────────────────────────────────────────
+function wireContent() {
+  const app = document.getElementById("app");
+
+  app.querySelectorAll("[data-expand]").forEach(row => {
+    row.addEventListener("click", () => {
+      const id = row.dataset.expand;
+      S.expanded  = S.expanded === id ? null : id;
+      S.addingTxn = null;
+      renderContent();
+    });
+  });
+
+  app.querySelectorAll("[data-tadd]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      const [type, catId] = btn.dataset.tadd.split("|");
+      S.addingTxn = { type, catId };
+      renderContent();
+      setTimeout(() => document.getElementById("txn-amt")?.focus(), 30);
+    });
+  });
+
+  const savebtn = document.getElementById("txn-save");
+  if (savebtn) {
+    const doSave = () => {
+      const amt = document.getElementById("txn-amt")?.value || "";
+      if (!amt) { document.getElementById("txn-amt")?.focus(); return; }
+      addTxn(
+        savebtn.dataset.ttype, savebtn.dataset.tcid,
+        document.getElementById("txn-name")?.value  || "",
+        amt,
+        document.getElementById("txn-date")?.value  || "",
+        document.getElementById("txn-notes")?.value || ""
+      );
+      S.addingTxn = null;
+      renderContent();
+    };
+    savebtn.addEventListener("click", e => { e.stopPropagation(); doSave(); });
+    ["txn-name","txn-amt","txn-date","txn-notes"].forEach(id => {
+      document.getElementById(id)?.addEventListener("keydown", e => { if (e.key === "Enter") doSave(); });
+    });
+  }
+
+  document.getElementById("txn-cancel")?.addEventListener("click", e => {
+    e.stopPropagation();
+    S.addingTxn = null;
+    renderContent();
+  });
+
+  app.querySelectorAll("[data-tdel]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      delTxn(btn.dataset.tdel);
+      renderContent();
+    });
+  });
+
+  app.querySelectorAll("[data-ef]").forEach(inp =>
+    inp.addEventListener("input", () => { const [t,id,f]=inp.dataset.ef.split("|"); updateDef(t,id,f,inp.value); })
+  );
+  app.querySelectorAll("[data-dx]").forEach(b =>
+    b.addEventListener("click", () => { const [t,id]=b.dataset.dx.split("|"); delrow(t,id); })
+  );
+  document.getElementById("do-add-exp")?.addEventListener("click", () => addrow("exp"));
+  document.getElementById("do-add-inc")?.addEventListener("click", () => addrow("inc"));
+
+  const nta = document.getElementById("nta");
+  if (nta) nta.addEventListener("input", () => { S.notes[S.month]=nta.value; sv("notes"); });
+
+  app.querySelectorAll("[data-dtap]").forEach(b => b.addEventListener("click", () => sdedit(b.dataset.dtap)));
+  app.querySelectorAll("[data-ddel]").forEach(b => b.addEventListener("click", () => rmdebt(b.dataset.ddel)));
+  app.querySelectorAll("[data-did]").forEach(i => {
+    const id=i.dataset.did;
+    i.addEventListener("blur",    () => cdedit(id));
+    i.addEventListener("keydown", e => { if(e.key==="Enter") cdedit(id); });
+  });
+  document.getElementById("do-add-debt")?.addEventListener("click", adddebt);
+
+  app.querySelectorAll("[data-ytap]").forEach(b => b.addEventListener("click", () => sdeditY(b.dataset.ytap)));
+  app.querySelectorAll("[data-ydel]").forEach(b => b.addEventListener("click", () => rmyearly(b.dataset.ydel)));
+  app.querySelectorAll("[data-yid]").forEach(i => {
+    const id=i.dataset.yid;
+    i.addEventListener("blur",    () => cdeditY(id));
+    i.addEventListener("keydown", e => { if(e.key==="Enter") cdeditY(id); });
+  });
+  document.getElementById("do-add-yr")?.addEventListener("click", addyearly);
+
+  app.querySelectorAll("[data-goto]").forEach(b =>
+    b.addEventListener("click", () => {
+      S.month=+b.dataset.goto; S.view="budget"; S.expanded=null; S.addingTxn=null; render();
+    })
+  );
+
+  // Links
+  app.querySelectorAll("[data-ldel]").forEach(b =>
+    b.addEventListener("click", () => rmlink(b.dataset.ldel))
+  );
+  document.getElementById("do-add-link")?.addEventListener("click", () => {
+    const n = document.getElementById("new-link-name");
+    const u = document.getElementById("new-link-url");
+    if (n && u) { addLink(n.value, u.value); n.value=""; u.value=""; }
+  });
+
+  // Backup panel
+  document.getElementById("bk-overlay")?.addEventListener("click", e => {
+    if (e.target.id === "bk-overlay") { S.showBackup=false; renderContent(); }
+  });
+  document.getElementById("bk-close")?.addEventListener("click", () => { S.showBackup=false; renderContent(); });
+  document.getElementById("bk-export")?.addEventListener("click", exportDataNow);
+  const bkImportBtn  = document.getElementById("bk-import-btn");
+  const bkImportFile = document.getElementById("bk-import-file");
+  bkImportBtn?.addEventListener("click", () => bkImportFile?.click());
+  bkImportFile?.addEventListener("change", e => { if(e.target.files[0]) importData(e.target.files[0]); });
+}
+
+function renderContent() {
+  const mc = document.getElementById("mc");
+  if (!mc) { render(); return; }
+  mc.innerHTML = (
+    S.view==="budget" ? rbgt() :
+    S.view==="year"   ? renderYear() :
+    S.view==="links"  ? renderLinks() :
+    rdebt()
+  ) + renderBackupPanel();
+  wireContent();
+}
+
+function render() {
+  const app = document.getElementById("app");
+  const mt  = MONTHS.map((m,i) =>
+    '<button class="mbtn'+(i===S.month?" on":mhd(i)?" hd":"")+'" data-m="'+i+'">'+m+'</button>'
+  ).join("");
+
+  app.innerHTML =
+    '<div class="topbar">' +
+      '<span class="app-icon-emoji">🦇</span>' +
+      '<span class="title">Morcego</span>' +
+      '<div class="year-nav">' +
+        '<button class="year-arrow" id="yr-prev"><i class="ti ti-chevron-left"></i></button>' +
+        '<span class="year-lbl">'+S.year+'</span>' +
+        '<button class="year-arrow" id="yr-next"><i class="ti ti-chevron-right"></i></button>' +
+      '</div>' +
+      '<div style="flex:1"></div>' +
+      '<button class="icobtn" id="bkbtn" title="Backup &amp; Sync">' +
+        '<i class="ti ti-database"></i>' +
+        '<span id="sync-dot" class="sync-dot '+(SCRIPT_URL?S.syncStatus:"")+'"></span>' +
+      '</button>' +
+      '<button class="icobtn'+(S.editMode?" edit-on":"")+'" id="edtbtn">' +
+        '<i class="ti '+(S.editMode?"ti-check":"ti-pencil")+'"></i>' +
+      '</button>' +
+    '</div>' +
+    '<div class="tabs">' +
+      '<button class="tbtn'+(S.view==="budget"?" on":"")+'" data-vw="budget">Monthly</button>' +
+      '<button class="tbtn'+(S.view==="year"?" on":"")+'" data-vw="year"'+(S.editMode?' disabled':'')+'>Year</button>' +
+      '<button class="tbtn'+(S.view==="debt"?" on":"")+'" data-vw="debt"'+(S.editMode?' disabled':'')+'>Debt</button>' +
+      '<button class="tbtn'+(S.view==="links"?" on":"")+'" data-vw="links"'+(S.editMode?' disabled':'')+'>Links</button>' +
+    '</div>' +
+    (S.view==="budget" ? '<div class="mscroll">'+mt+'</div>' : '') +
+    '<div id="mc">'+(
+      S.view==="budget" ? rbgt() :
+      S.view==="year"   ? renderYear() :
+      S.view==="links"  ? renderLinks() :
+      rdebt()
+    )+renderBackupPanel()+'</div>';
+
+  app.querySelectorAll("[data-m]").forEach(b =>
+    b.addEventListener("click", () => {
+      S.month=+b.dataset.m; S.expanded=null; S.addingTxn=null; render();
+      b.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+    })
+  );
+  app.querySelectorAll("[data-vw]").forEach(b =>
+    b.addEventListener("click", () => { if (S.editMode && b.dataset.vw !== "budget") return; S.view=b.dataset.vw; S.expanded=null; S.addingTxn=null; render(); })
+  );
+  document.getElementById("yr-prev").addEventListener("click", () => { S.year--; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
+  document.getElementById("yr-next").addEventListener("click", () => { S.year++; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
+  document.getElementById("edtbtn").addEventListener("click", () => {
+    S.editMode = !S.editMode;
+    if (S.editMode) S.view = "budget";
+    S.expanded=null; S.addingTxn=null; render();
+  });
+  document.getElementById("bkbtn").addEventListener("click", () => { S.showBackup=true; renderContent(); });
+  wireContent();
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+migrateOldKeys();
+loadState();
+migrateTransactions();
+render();
+// Load from Sheets in the background after initial render
+syncFromSheets();
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+}
+</script>
+</body>
+</html>
