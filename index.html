@@ -123,9 +123,9 @@
     .ncard.pos{background:var(--ncard-pos-bg);box-shadow:var(--ncard-pos-shadow)}
     .ncard.neg{background:var(--ncard-neg-bg);box-shadow:var(--ncard-neg-shadow)}
     .n-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
-    .n-month{font-size:20px;font-weight:700;letter-spacing:.01em}
+    .n-month{font-size:32px;font-weight:700;letter-spacing:.01em}
     .n-month.pos{color:var(--ncard-pos-text)}.n-month.neg{color:var(--ncard-neg-text)}
-    .nval{font-size:46px;font-weight:700;font-family:var(--mono);letter-spacing:-2.5px;line-height:1.05}
+    .nval{font-size:40px;font-weight:700;font-family:var(--mono);letter-spacing:-2.5px;line-height:1.05}
     .nval.pos{color:var(--ncard-pos-text)}.nval.neg{color:var(--ncard-neg-text)}
 
     /* Cards */
@@ -794,7 +794,7 @@ function rbgt() {
       '<button class="addbtn" id="do-add-inc"><i class="ti ti-plus"></i></button>' +
     '</div>' : "";
 
-  const netLabel = t.hasAct ? MONTHS[S.month] : MONTHS[S.month]+" (projected)";
+  const netLabel = t.hasAct ? MONTHS[S.month] : MONTHS[S.month];
 
   return (em ? '<div class="edit-banner"><i class="ti ti-pencil"></i> Edit mode — changes to projections are saved for '+MONTHS[S.month]+'</div>' : "") +
     '<div class="ncard '+(pos?"pos":"neg")+'">' +
@@ -1089,7 +1089,7 @@ function render() {
       '<button class="tbtn'+(S.view==="budget"?" on":"")+'" data-vw="budget">Monthly</button>' +
       '<button class="tbtn'+(S.view==="year"?" on":"")+'" data-vw="year"'+(S.editMode?' disabled':'')+'>Year</button>' +
       '<button class="tbtn'+(S.view==="debt"?" on":"")+'" data-vw="debt"'+(S.editMode?' disabled':'')+'>Debt</button>' +
-      '<button class="tbtn'+(S.view==="links"?" on":"")+'" data-vw="links"'+(S.editMode?' disabled':'')+'>Links</button>' +
+      '<button class="tbtn'+(S.view==="links"?" on":"")+'" data-vw="links">Links</button>' +
     '</div>' +
     (S.view==="budget" ? '<div class="mscroll">'+mt+'</div>' : '') +
     '<div id="mc">'+(
