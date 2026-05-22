@@ -741,6 +741,8 @@ function rbgt() {
         '<span class="nval '+(pos?"pos":"neg")+'">'+(pos?"+":"−")+fmt(Math.abs(net))+'</span>' +
       '</div>' +
     '</div>' +
+    '<div class="notes-lbl">Notes</div>' +
+    '<textarea class="ntxt" id="nta" placeholder="Notes for '+MONTHS[S.month]+'…" rows="3">'+esc(S.notes[S.month]||"")+'</textarea>' +
     '<div class="card">' +
       '<div class="chead'+(em?" em":"")+'">' +
         '<span class="clbl">Expenses</span>' +
@@ -758,9 +760,7 @@ function rbgt() {
       (em ? "" : chdr) +
       S.incDefs.map(i => em ? erow("inc",i) : nrow("inc",i)).join("") +
       addIncRow +
-    '</div>' +
-    '<div class="notes-lbl">Notes</div>' +
-    '<textarea class="ntxt" id="nta" placeholder="Notes for '+MONTHS[S.month]+'…" rows="3">'+esc(S.notes[S.month]||"")+'</textarea>';
+    '</div>';
 }
 
 function rdebt() {
