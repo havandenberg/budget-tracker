@@ -120,13 +120,17 @@
     .edit-banner{background:var(--warn-bg);color:var(--warn-text);padding:11px 15px;font-size:14px;font-weight:500;margin-bottom:12px;border-radius:12px;display:flex;align-items:center;gap:8px;border:1px solid var(--warn-border)}
 
     /* Net card */
-    .ncard{border-radius:18px;padding:18px 22px;margin-bottom:16px}
+    .ncard{border-radius:18px;margin-bottom:16px;overflow:hidden}
     .ncard.pos{background:var(--ncard-pos-bg);box-shadow:var(--ncard-pos-shadow)}
     .ncard.neg{background:var(--ncard-neg-bg);box-shadow:var(--ncard-neg-shadow)}
+    .ncard-top{padding:12px 18px}
+    .ncard-notes{background:var(--bg);padding:2px 15px 4px}
+    .ncard-notes .ntxt{margin-bottom:0;border:none;border-radius:0;box-shadow:none;padding:10px 0}
+    .ncard-notes .ntxt:focus{background:transparent}
     .n-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
-    .n-month{font-size:32px;font-weight:700;letter-spacing:.01em}
+    .n-month{font-size:20px;font-weight:700;letter-spacing:.01em}
     .n-month.pos{color:var(--ncard-pos-text)}.n-month.neg{color:var(--ncard-neg-text)}
-    .nval{font-size:40px;font-weight:700;font-family:var(--mono);letter-spacing:-2.5px;line-height:1.05}
+    .nval{font-size:28px;font-weight:700;font-family:var(--mono);letter-spacing:-1.5px;line-height:1.05}
     .nval.pos{color:var(--ncard-pos-text)}.nval.neg{color:var(--ncard-neg-text)}
 
     /* Cards */
@@ -736,13 +740,16 @@ function rbgt() {
 
   return (em ? '<div class="edit-banner"><i class="ti ti-pencil"></i> Edit mode</div>' : "") +
     '<div class="ncard '+(pos?"pos":"neg")+'">' +
-      '<div class="n-top">' +
-        '<span class="n-month '+(pos?"pos":"neg")+'">'+netLabel+'</span>' +
-        '<span class="nval '+(pos?"pos":"neg")+'">'+(pos?"+":"−")+fmt(Math.abs(net))+'</span>' +
+      '<div class="ncard-top">' +
+        '<div class="n-top">' +
+          '<span class="n-month '+(pos?"pos":"neg")+'">'+netLabel+'</span>' +
+          '<span class="nval '+(pos?"pos":"neg")+'">'+(pos?"+":"−")+fmt(Math.abs(net))+'</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ncard-notes">' +
+        '<textarea class="ntxt" id="nta" placeholder="Notes for '+MONTHS[S.month]+'…" rows="3">'+esc(S.notes[S.month]||"")+'</textarea>' +
       '</div>' +
     '</div>' +
-    '<div class="notes-lbl">Notes</div>' +
-    '<textarea class="ntxt" id="nta" placeholder="Notes for '+MONTHS[S.month]+'…" rows="3">'+esc(S.notes[S.month]||"")+'</textarea>' +
     '<div class="card">' +
       '<div class="chead'+(em?" em":"")+'">' +
         '<span class="clbl">Expenses</span>' +
@@ -765,16 +772,10 @@ function rbgt() {
 
 function rdebt() {
   const tot  = S.debt.reduce((s,d)=>s+(d.amount||0),0);
-  const ytot = S.yearlyDefs.reduce((s,y)=>s+(y.amount||0),0);
   const debtRows = S.debt.map(d =>
     d.id===S.editingDebt
       ? '<div class="drow"><div class="dlbl">'+esc(d.label)+'</div><input id="di'+d.id+'" class="einp" type="number" inputmode="decimal" value="'+d.amount+'" data-did="'+d.id+'"/><button class="dxbtn" data-ddel="'+d.id+'">×</button></div>'
       : '<div class="drow"><div class="dlbl">'+esc(d.label)+'</div><button class="damt" data-dtap="'+d.id+'">'+fmt(d.amount)+'</button><button class="dxbtn" data-ddel="'+d.id+'">×</button></div>'
-  ).join("");
-  const yearlyRows = S.yearlyDefs.map(y =>
-    y.id===S.editingYearly
-      ? '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><input id="yi'+y.id+'" class="einp" type="number" inputmode="decimal" value="'+y.amount+'" data-yid="'+y.id+'"/><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
-      : '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><button class="damt" data-ytap="'+y.id+'">'+fmt(y.amount)+'</button><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
   ).join("");
   return '<div class="card">' +
     '<div class="chead"><span class="clbl">Debt</span><span class="ctot">'+fmt(tot)+'</span></div>' +
@@ -783,7 +784,39 @@ function rdebt() {
       '<input class="ename" id="new-debt-name" type="text" placeholder="New debt…" style="flex:1"/>' +
       '<input class="eproj" id="new-debt-amt" type="number" inputmode="decimal" placeholder="$0"/>' +
       '<button class="addbtn" id="do-add-debt"><i class="ti ti-plus"></i></button>' +
-    '</div></div>' +
+    '</div></div>';
+}
+
+function renderYear() {
+  const cards = MONTHS.map((m, i) => {
+    const t   = calcMonth(i);
+    const net = t.hasAct ? t.net : t.pnet;
+    const pos = net >= 0;
+    const colorCard = t.hasAct ? (pos ? " mpos" : " mneg") : "";
+    const colorVal  = t.hasAct ? (pos ? "mpos" : "mneg") : "";
+    return '<button class="mocard'+colorCard+(i===S.month?" mcur":"")+'" data-goto="'+i+'">' +
+      '<div class="mocard-m">'+m+'</div>' +
+      '<div class="mocard-v '+colorVal+'">'+(t.hasAct ? (pos?"+":"−")+fmt(Math.abs(net)) : fmt(Math.abs(net)))+'</div>' +
+      (!t.hasAct ? '<div class="mocard-p">proj</div>' : '') +
+    '</button>';
+  }).join("");
+  const yearNet = MONTHS.reduce((s,_,i)=>{ const t=calcMonth(i); return s+(t.hasAct?t.net:t.pnet); },0);
+  const ypos = yearNet >= 0;
+  const ytot = S.yearlyDefs.reduce((s,y)=>s+(y.amount||0),0);
+  const yearlyRows = S.yearlyDefs.map(y =>
+    y.id===S.editingYearly
+      ? '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><input id="yi'+y.id+'" class="einp" type="number" inputmode="decimal" value="'+y.amount+'" data-yid="'+y.id+'"/><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
+      : '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><button class="damt" data-ytap="'+y.id+'">'+fmt(y.amount)+'</button><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
+  ).join("");
+  return '<div class="ovgrid">'+cards+'</div>' +
+    '<div class="ncard '+(ypos?"pos":"neg")+'">' +
+      '<div class="ncard-top">' +
+        '<div class="n-top">' +
+          '<span class="n-month '+(ypos?"pos":"neg")+'">'+S.year+' total</span>' +
+          '<span class="nval '+(ypos?"pos":"neg")+'">'+(ypos?"+":"−")+fmt(Math.abs(yearNet))+'</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
     '<div class="card">' +
     '<div class="chead"><span class="clbl">Yearly expenses</span>' +
       '<div class="chead-vals"><span class="ctot">'+fmt(ytot)+'</span><span class="cproj">'+fmt(ytot/12)+'/mo</span></div>' +
@@ -794,28 +827,6 @@ function rdebt() {
       '<input class="eproj" id="new-yr-amt" type="number" inputmode="decimal" placeholder="$0"/>' +
       '<button class="addbtn" id="do-add-yr"><i class="ti ti-plus"></i></button>' +
     '</div></div>';
-}
-
-function renderYear() {
-  const cards = MONTHS.map((m, i) => {
-    const t   = calcMonth(i);
-    const net = t.hasAct ? t.net : t.pnet;
-    const pos = net >= 0;
-    return '<button class="mocard'+(pos?" mpos":" mneg")+(i===S.month?" mcur":"")+'" data-goto="'+i+'">' +
-      '<div class="mocard-m">'+m+'</div>' +
-      '<div class="mocard-v '+(pos?"mpos":"mneg")+'">'+(pos?"+":"−")+fmt(Math.abs(net))+'</div>' +
-      (!t.hasAct ? '<div class="mocard-p">proj</div>' : '') +
-    '</button>';
-  }).join("");
-  const yearNet = MONTHS.reduce((s,_,i)=>{ const t=calcMonth(i); return s+(t.hasAct?t.net:t.pnet); },0);
-  const ypos = yearNet >= 0;
-  return '<div class="ovgrid">'+cards+'</div>' +
-    '<div class="ncard '+(ypos?"pos":"neg")+'">' +
-      '<div class="n-top">' +
-        '<span class="n-month '+(ypos?"pos":"neg")+'">'+S.year+' total</span>' +
-        '<span class="nval '+(ypos?"pos":"neg")+'">'+(ypos?"+":"−")+fmt(Math.abs(yearNet))+'</span>' +
-      '</div>' +
-    '</div>';
 }
 
 function renderLinks() {
