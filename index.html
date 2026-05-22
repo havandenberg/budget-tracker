@@ -428,14 +428,17 @@ async function syncToSheets() {
   setSyncStatus("syncing");
   try {
     const payload = JSON.stringify(getAllLocalData());
-    await fetch(SCRIPT_URL, {
+    const res = await fetch(SCRIPT_URL, {
       method: "POST",
       body: payload,
       headers: { "Content-Type": "text/plain" },
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
     setSyncStatus("synced");
+    console.log("[morcego] syncToSheets: ok");
   } catch(e) {
     setSyncStatus("error");
+    console.error("[morcego] syncToSheets failed:", e);
   }
 }
 
@@ -444,17 +447,20 @@ async function syncFromSheets() {
   setSyncStatus("syncing");
   try {
     const res = await fetch(SCRIPT_URL + "?cb=" + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
     const allKeys = await res.json();
-    if (!allKeys || typeof allKeys !== "object") throw new Error("bad response");
+    if (!allKeys || typeof allKeys !== "object") throw new Error("bad response: " + JSON.stringify(allKeys).slice(0, 200));
     Object.entries(allKeys).forEach(([k, v]) => {
       if (k.startsWith("mb:") && v) localStorage.setItem(k, v);
     });
     loadState();
     migrateTransactions();
     setSyncStatus("synced");
+    console.log("[morcego] syncFromSheets: ok, keys:", Object.keys(allKeys).filter(k => k.startsWith("mb:")));
     render();
   } catch(e) {
     setSyncStatus("error");
+    console.error("[morcego] syncFromSheets failed:", e);
   }
 }
 
@@ -826,9 +832,9 @@ function renderLinks() {
   return '<div class="card">' +
     linkCards +
     '<div class="addrow">' +
-      '<input class="ename" id="new-link-name" type="text" placeholder="Link name (e.g. Food Plan)" style="flex:1"/>' +
+      '<input class="ename" id="new-link-name" type="text" placeholder="Name" style="flex:1"/>' +
       '<div style="display:flex;gap:6px">' +
-        '<input class="ename" id="new-link-url" type="url" placeholder="https://…" style="flex:1"/>' +
+        '<input class="ename" id="new-link-url" type="url" placeholder="URL" style="flex:1"/>' +
         '<button class="addbtn" id="do-add-link"><i class="ti ti-plus"></i></button>' +
       '</div>' +
     '</div>' +
@@ -996,7 +1002,7 @@ function render() {
   );
   document.getElementById("yr-prev").addEventListener("click", () => { S.year--; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
   document.getElementById("yr-next").addEventListener("click", () => { S.year++; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
-  document.getElementById("edtbtn").addEventListener("click", () => {
+  document.getElementById("edtbtn")?.addEventListener("click", () => {
     S.editMode = !S.editMode;
     if (S.editMode) S.view = "budget";
     S.expanded=null; S.addingTxn=null; render();
