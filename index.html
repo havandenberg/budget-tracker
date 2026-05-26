@@ -12,75 +12,42 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css" />
   <style>
     :root {
-      --bg:            #ffffff;
-      --bg2:           #f5f5f7;
-      --bg3:           #ebebed;
-      --text:          #1c1c1e;
-      --text2:         #636366;
-      --text3:         #aeaeb2;
-      --border:        rgba(0,0,0,0.10);
-      --border2:       rgba(0,0,0,0.20);
-      --success-bg:    #d4edda;
-      --success-text:  #155724;
-      --danger-bg:     #f8d7da;
-      --danger-text:   #721c24;
-      --warn-bg:       #fff3cd;
-      --warn-text:     #856404;
-      --warn-border:   #ffc107;
+      --bg:            #18181f;
+      --bg2:           #22222c;
+      --bg3:           #2a2a35;
+      --text:          #dddde8;
+      --text2:         #9898ae;
+      --text3:         #5c5c72;
+      --border:        rgba(255,255,255,0.07);
+      --border2:       rgba(255,255,255,0.15);
+      --success-bg:    #0b2216;
+      --success-text:  #4ade80;
+      --danger-bg:     #200b14;
+      --danger-text:   #f87171;
+      --warn-bg:       #281c04;
+      --warn-text:     #fbbf24;
+      --warn-border:   #7a5800;
       --accent:        #a855f7;
-      --accent-bg:     #f3e8ff;
-      --accent-text:   #7e22ce;
-      --accent-border: #d8b4fe;
-      --card-shadow:      0 1px 4px rgba(0,0,0,0.06), 0 0 0 .5px rgba(0,0,0,0.05);
-      --ncard-pos-bg:     linear-gradient(140deg,#cff0d8,#bde8ca);
-      --ncard-pos-shadow: 0 4px 20px rgba(21,87,36,0.10);
-      --ncard-pos-text:   #155724;
-      --ncard-neg-bg:     linear-gradient(140deg,#fce4e6,#f8d2d5);
-      --ncard-neg-shadow: 0 4px 20px rgba(114,28,36,0.08);
-      --ncard-neg-text:   #721c24;
-      --mocard-neg-bg:    var(--danger-bg);
-      --mneg-text:        var(--danger-text);
+      --accent-bg:     #28103e;
+      --accent-text:   #c084fc;
+      --accent-border: #6d28d9;
+      --card-shadow:      0 2px 16px rgba(0,0,0,0.55), inset 0 0 0 .5px rgba(255,255,255,0.04);
+      --ncard-pos-bg:     linear-gradient(140deg,#0a2515,#122d1c);
+      --ncard-pos-shadow: 0 8px 32px rgba(74,222,128,0.12), inset 0 0 0 1px rgba(74,222,128,0.09);
+      --ncard-pos-text:   #4ade80;
+      --ncard-neg-bg:     linear-gradient(140deg,#180830,#20093c);
+      --ncard-neg-shadow: 0 8px 32px rgba(168,85,247,0.18), inset 0 0 0 1px rgba(168,85,247,0.12);
+      --ncard-neg-text:   #c084fc;
+      --mocard-neg-bg:    #180830;
+      --mneg-text:        #c084fc;
       --mono: 'SF Mono','Fira Code','Courier New',monospace;
       --sans: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       --r:  10px;
       --rl: 14px;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg:            #0f0f12;
-        --bg2:           #1c1c22;
-        --bg3:           #242429;
-        --text:          #f0f0f5;
-        --text2:         #9494a8;
-        --text3:         #50505f;
-        --border:        rgba(255,255,255,0.07);
-        --border2:       rgba(255,255,255,0.15);
-        --success-bg:    #0b2216;
-        --success-text:  #4ade80;
-        --danger-bg:     #200b14;
-        --danger-text:   #f87171;
-        --warn-bg:       #281c04;
-        --warn-text:     #fbbf24;
-        --warn-border:   #7a5800;
-        --accent-bg:     #28103e;
-        --accent-text:   #c084fc;
-        --accent-border: #6d28d9;
-        --card-shadow:      0 2px 16px rgba(0,0,0,0.55), inset 0 0 0 .5px rgba(255,255,255,0.04);
-        --ncard-pos-bg:     linear-gradient(140deg,#0a2515,#122d1c);
-        --ncard-pos-shadow: 0 8px 32px rgba(74,222,128,0.12), inset 0 0 0 1px rgba(74,222,128,0.09);
-        --ncard-pos-text:   #4ade80;
-        --ncard-neg-bg:     linear-gradient(140deg,#180830,#20093c);
-        --ncard-neg-shadow: 0 8px 32px rgba(168,85,247,0.18), inset 0 0 0 1px rgba(168,85,247,0.12);
-        --ncard-neg-text:   #c084fc;
-        --mocard-neg-bg:    #180830;
-        --mneg-text:        #c084fc;
-      }
+      color-scheme: dark;
     }
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{background:var(--bg3);font-family:var(--sans);min-height:100vh}
-    @media (prefers-color-scheme: dark){
-      body{background:radial-gradient(ellipse at 50% -5%,#1e0838 0%,#0f0f12 55%)}
-    }
+    body{background:radial-gradient(ellipse at 50% -5%,#1e0838 0%,#18181f 60%);font-family:var(--sans);min-height:100vh}
     .app{padding:12px;max-width:480px;margin:0 auto;padding-bottom:48px}
 
     /* Top bar */
@@ -182,6 +149,9 @@
     .txn-amt{font-size:15px;font-family:var(--mono);font-weight:500;color:var(--text);flex-shrink:0}
     .txn-del{width:26px;height:26px;border-radius:7px;border:none;background:transparent;color:var(--text3);cursor:pointer;flex-shrink:0;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
     .txn-del:active{background:var(--danger-bg);color:var(--danger-text)}
+    .txn-edit{width:26px;height:26px;border-radius:7px;border:none;background:transparent;color:var(--text3);cursor:pointer;flex-shrink:0;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
+    .txn-edit:active{background:var(--accent-bg);color:var(--accent-text)}
+    .txn-date{font-size:11px;color:var(--text2);font-family:var(--mono)}
 
     /* Add transaction */
     .txn-add-btn{display:flex;align-items:center;gap:6px;padding:10px 15px 10px 28px;color:var(--accent-text);font-size:13px;font-weight:500;background:transparent;border:none;cursor:pointer;width:100%;font-family:var(--sans)}
@@ -294,10 +264,10 @@ const DEF_DEBT = [
   { id:"ex",        label:"Ex",        amount:1100 },
 ];
 const DEF_YEARLY = [
-  { id:"car_ins",    label:"Car Insurance",    amount:1200 },
-  { id:"tattoo_ins", label:"Tattoo Insurance", amount:1060 },
-  { id:"taxes",      label:"Taxes",            amount:560  },
-  { id:"gym_yr",     label:"Gym (annual)",     amount:50   },
+  { id:"car_ins",    label:"Car Insurance",    amount:1200, due:"2026-01-01" },
+  { id:"tattoo_ins", label:"Tattoo Insurance", amount:1060, due:"2026-02-01" },
+  { id:"taxes",      label:"Taxes",            amount:560,  due:"2026-04-15" },
+  { id:"gym_yr",     label:"Gym (annual)",     amount:50,   due:"2026-01-01" },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -306,8 +276,16 @@ const esc = s => String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(
 const ord = n => n + (n===1||n===21||n===31?"st":n===2||n===22?"nd":n===3||n===23?"rd":"th");
 const fmtDate = s => {
   if (!s) return "";
-  const d = new Date(s + "T12:00:00");
-  return isNaN(d) ? "" : d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(s) ? s + "T12:00:00" : s;
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+};
+const normalizeDate = s => {
+  if (!s) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return "";
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
 };
 
 // ── State ─────────────────────────────────────────────────────────────────────
@@ -323,10 +301,11 @@ let S = {
   yearlyDefs:    DEF_YEARLY.map(y => ({...y})),
   links:         [],
   notes:         {},
-  expanded:      null,
+  expanded:      new Set(),
   addingTxn:     null,
   editingDebt:   null,
   editingYearly: null,
+  editingTxn:    null,
   syncStatus:    "idle",
 };
 
@@ -379,6 +358,26 @@ function migrateTransactions() {
     }
   });
   if (changed) sv("data");
+}
+
+function normalizeTxnDates() {
+  let changed = false;
+  Object.keys(S.data).forEach(m => {
+    const txns = S.data[m]?.transactions;
+    if (!txns) return;
+    txns.forEach(txn => {
+      if (txn.date) {
+        const n = normalizeDate(txn.date);
+        if (n !== txn.date) { txn.date = n; changed = true; }
+      }
+    });
+  });
+  if (changed) sv("data");
+}
+
+function autoExpandCats() {
+  const txns = S.data[S.month]?.transactions || [];
+  S.expanded = new Set(txns.map(t => t.catId));
 }
 
 function loadState() {
@@ -459,6 +458,7 @@ async function syncFromSheets() {
     });
     loadState();
     migrateTransactions();
+    normalizeTxnDates();
     setSyncStatus("synced");
     console.log("[morcego] syncFromSheets: ok, keys:", Object.keys(allKeys).filter(k => k.startsWith("mb:")));
     render();
@@ -591,16 +591,24 @@ function adddebt() {
 function rmdebt(id) { S.debt=S.debt.filter(d=>d.id!==id); sv("debt"); renderContent(); }
 
 // ── Yearly expenses ───────────────────────────────────────────────────────────
-function sdeditY(id) { S.editingYearly=id; renderContent(); setTimeout(()=>{ const i=document.getElementById("yi"+id); if(i){i.focus();i.select();} },20); }
+function sdeditY(id) { S.editingYearly=id; renderContent(); setTimeout(()=>{ const l=document.getElementById("yl"+id); if(l){l.focus();l.select();} },20); }
 function cdeditY(id) {
-  const i=document.getElementById("yi"+id);
-  if(i){ const d=S.yearlyDefs.find(x=>x.id===id); if(d) d.amount=parseFloat(i.value)||0; sv("yearly"); }
+  const d=S.yearlyDefs.find(x=>x.id===id);
+  if(d){
+    const yl=document.getElementById("yl"+id);
+    const yi=document.getElementById("yi"+id);
+    const yd=document.getElementById("yd"+id);
+    if(yl&&yl.value.trim()) d.label=yl.value.trim();
+    if(yi) d.amount=parseFloat(yi.value)||0;
+    if(yd) d.due=yd.value||undefined;
+    sv("yearly");
+  }
   S.editingYearly=null; setTimeout(renderContent,0);
 }
 function addyearly() {
-  const n=document.getElementById("new-yr-name"), a=document.getElementById("new-yr-amt");
+  const n=document.getElementById("new-yr-name"), a=document.getElementById("new-yr-amt"), dt=document.getElementById("new-yr-due");
   if(!n?.value.trim()) return;
-  S.yearlyDefs.push({id:"y"+Date.now(),label:n.value.trim(),amount:parseFloat(a?.value)||0});
+  S.yearlyDefs.push({id:"y"+Date.now(),label:n.value.trim(),amount:parseFloat(a?.value)||0,due:dt?.value||undefined});
   sv("yearly"); renderContent();
 }
 function rmyearly(id) { S.yearlyDefs=S.yearlyDefs.filter(d=>d.id!==id); sv("yearly"); renderContent(); }
@@ -624,7 +632,7 @@ function rbgt() {
 
   const chdr =
     '<div class="chdr-row"><div style="flex:1"></div>' +
-    '<div class="c-proj chdr-lbl" style="text-align:right">projected</div>' +
+    '<div class="c-proj chdr-lbl" style="text-align:right">expected</div>' +
     '<div style="width:110px;text-align:right;flex-shrink:0" class="chdr-lbl">actual</div></div>';
 
   function erow(type, def) {
@@ -636,7 +644,7 @@ function rbgt() {
         '<input class="ename" type="text" value="'+esc(def.label)+'" placeholder="'+(isExp?"Expense name":"Income source")+'" data-ef="'+type+'|'+def.id+'|name"/>' +
       '</div>' +
       '<div class="erow-bot">' +
-        '<span class="ehint">projected $</span>' +
+        '<span class="ehint">expected $</span>' +
         '<input class="eproj" type="number" inputmode="decimal" value="'+proj+'" data-ef="'+type+'|'+def.id+'|proj"/>' +
         (isExp ? '<span class="ehint">due day</span><input class="edue" type="number" inputmode="numeric" value="'+(def.due||"")+'" placeholder="—" data-ef="'+type+'|'+def.id+'|due"/>' : '') +
       '</div>' +
@@ -648,28 +656,55 @@ function rbgt() {
     const actual = getCatActual(type, def.id, S.month);
     const hv     = actual !== null;
     const ob     = type === "exp" && hv && actual > proj;
-    const isOpen = S.expanded === def.id;
-    const txns   = isOpen ? getCatTxns(type, def.id, S.month) : [];
+    const isOpen = S.expanded.has(def.id);
+    const txns   = isOpen ? [...getCatTxns(type, def.id, S.month)].sort((a,b) => {
+      if (!a.date && !b.date) return 0;
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return a.date.localeCompare(b.date);
+    }) : [];
 
     let progBar = "";
-    if (type === "exp" && hv && proj > 0) {
+    if (hv && proj > 0) {
       const pct   = Math.min(100, Math.round((actual / proj) * 100));
-      const color = ob ? "var(--danger-text)" : "var(--success-text)";
+      const color = type === "exp"
+        ? (ob ? "var(--danger-text)" : "var(--success-text)")
+        : (actual >= proj ? "var(--success-text)" : "var(--accent-text)");
       progBar = '<div class="prog-wrap"><div class="prog-fill" style="width:'+pct+'%;background:'+color+'"></div></div>';
     }
 
     let txnSection = "";
     if (isOpen) {
       const txnRows = txns.map(tx => {
+        if (S.editingTxn === tx.id) {
+          return '<div class="txn-row" style="flex-direction:column;align-items:stretch">' +
+            '<div style="display:flex;gap:6px;margin-bottom:6px">' +
+              '<input id="etxn-name" class="txn-inp fl" type="text" value="'+esc(tx.name||'')+'" placeholder="Description" autocomplete="off"/>' +
+              '<input id="etxn-amt" class="txn-inp amt" type="number" inputmode="decimal" value="'+tx.amount+'"/>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;margin-bottom:6px">' +
+              '<input id="etxn-date" class="txn-inp dt" type="date" value="'+(tx.date||'')+'"/>' +
+              '<input id="etxn-notes" class="txn-inp fl" type="text" value="'+esc(tx.notes||'')+'" placeholder="Notes (optional)" autocomplete="off"/>' +
+            '</div>' +
+            '<div class="txn-form-btns" style="justify-content:space-between">' +
+              '<button class="txn-cancel" style="color:var(--danger-text);border-color:currentColor" data-tedit-del="'+tx.id+'">Delete</button>' +
+              '<div style="display:flex;gap:8px">' +
+                '<button class="txn-cancel" id="etxn-cancel">Cancel</button>' +
+                '<button class="txn-save" id="etxn-save" data-tsave="'+tx.id+'">Save</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }
         const d = fmtDate(tx.date);
-        const meta = [d, tx.notes].filter(Boolean).join(" · ");
+        const nameContent = (tx.name ? esc(tx.name) : '') +
+          (d ? '<span class="txn-date">'+(tx.name?' · ':'')+esc(d)+'</span>' : '');
         return '<div class="txn-row">' +
           '<div class="txn-info">' +
-            (tx.name ? '<div class="txn-name">'+esc(tx.name)+'</div>' : '') +
-            (meta    ? '<div class="txn-meta">'+esc(meta)+'</div>' : '') +
+            (nameContent ? '<div class="txn-name">'+nameContent+'</div>' : '') +
+            (tx.notes ? '<div class="txn-meta">'+esc(tx.notes)+'</div>' : '') +
           '</div>' +
           '<span class="txn-amt">'+fmt(tx.amount)+'</span>' +
-          '<button class="txn-del" data-tdel="'+tx.id+'">×</button>' +
+          '<button class="txn-edit" data-tedit="'+tx.id+'"><i class="ti ti-pencil" style="font-size:12px"></i></button>' +
         '</div>';
       }).join("");
 
@@ -682,7 +717,7 @@ function rbgt() {
         addPart =
           '<div class="txn-form">' +
             '<div class="txn-form-row">' +
-              '<input class="txn-inp fl" id="txn-name" type="text" placeholder="Description (optional)" autocomplete="off"/>' +
+              '<input class="txn-inp fl" id="txn-name" type="text" placeholder="Description" autocomplete="off"/>' +
               '<input class="txn-inp amt" id="txn-amt" type="number" inputmode="decimal" placeholder="$0"/>' +
             '</div>' +
             '<div class="txn-form-row">' +
@@ -753,7 +788,7 @@ function rbgt() {
     '<div class="card">' +
       '<div class="chead'+(em?" em":"")+'">' +
         '<span class="clbl">Expenses</span>' +
-        '<div class="chead-vals"><span class="ctot">'+fmt(t.ae)+'</span><span class="cproj">/ '+fmt(t.pe)+' proj</span></div>' +
+        '<div class="chead-vals"><span class="ctot">'+fmt(t.ae)+'</span><span class="cproj">/ '+fmt(t.pe)+' exp</span></div>' +
       '</div>' +
       (em ? "" : chdr) +
       S.expDefs.map(e => em ? erow("exp",e) : nrow("exp",e)).join("") +
@@ -762,7 +797,7 @@ function rbgt() {
     '<div class="card">' +
       '<div class="chead'+(em?" em":"")+'">' +
         '<span class="clbl">Income</span>' +
-        '<div class="chead-vals"><span class="ctot">'+fmt(t.ai)+'</span><span class="cproj">/ '+fmt(t.pi)+' proj</span></div>' +
+        '<div class="chead-vals"><span class="ctot">'+fmt(t.ai)+'</span><span class="cproj">/ '+fmt(t.pi)+' exp</span></div>' +
       '</div>' +
       (em ? "" : chdr) +
       S.incDefs.map(i => em ? erow("inc",i) : nrow("inc",i)).join("") +
@@ -797,7 +832,7 @@ function renderYear() {
     return '<button class="mocard'+colorCard+(i===S.month?" mcur":"")+'" data-goto="'+i+'">' +
       '<div class="mocard-m">'+m+'</div>' +
       '<div class="mocard-v '+colorVal+'">'+(t.hasAct ? (pos?"+":"−")+fmt(Math.abs(net)) : fmt(Math.abs(net)))+'</div>' +
-      (!t.hasAct ? '<div class="mocard-p">proj</div>' : '') +
+      (!t.hasAct ? '<div class="mocard-p">exp</div>' : '') +
     '</button>';
   }).join("");
   const yearNet = MONTHS.reduce((s,_,i)=>{ const t=calcMonth(i); return s+(t.hasAct?t.net:t.pnet); },0);
@@ -805,8 +840,21 @@ function renderYear() {
   const ytot = S.yearlyDefs.reduce((s,y)=>s+(y.amount||0),0);
   const yearlyRows = S.yearlyDefs.map(y =>
     y.id===S.editingYearly
-      ? '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><input id="yi'+y.id+'" class="einp" type="number" inputmode="decimal" value="'+y.amount+'" data-yid="'+y.id+'"/><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
-      : '<div class="drow"><div class="dlbl">'+esc(y.label)+'</div><button class="damt" data-ytap="'+y.id+'">'+fmt(y.amount)+'</button><button class="dxbtn" data-ydel="'+y.id+'">×</button></div>'
+      ? '<div class="drow" style="flex-direction:column;align-items:stretch;gap:8px">' +
+          '<div style="display:flex;gap:6px">' +
+            '<input id="yl'+y.id+'" class="txn-inp fl" type="text" value="'+esc(y.label)+'" placeholder="Name"/>' +
+            '<input id="yi'+y.id+'" class="txn-inp amt" type="number" inputmode="decimal" value="'+y.amount+'"/>' +
+          '</div>' +
+          '<input id="yd'+y.id+'" class="txn-inp dt" type="date" value="'+(y.due||'')+'"/>' +
+          '<div class="txn-form-btns" style="justify-content:space-between">' +
+            '<button class="txn-cancel" style="color:var(--danger-text);border-color:currentColor" data-ydel="'+y.id+'">Delete</button>' +
+            '<div style="display:flex;gap:8px">' +
+              '<button class="txn-cancel" data-ycancel="1">Cancel</button>' +
+              '<button class="txn-save" data-ysave="'+y.id+'">Save</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      : '<div class="drow"><div class="dlbl"><div>'+esc(y.label)+'</div>'+(y.due?'<div class="rdue">'+fmtDate(y.due)+'</div>':'')+'</div><span class="txn-amt">'+fmt(y.amount)+'</span><button class="txn-edit" data-ytap="'+y.id+'"><i class="ti ti-pencil" style="font-size:12px"></i></button></div>'
   ).join("");
   return '<div class="ovgrid">'+cards+'</div>' +
     '<div class="ncard '+(ypos?"pos":"neg")+'">' +
@@ -822,8 +870,9 @@ function renderYear() {
       '<div class="chead-vals"><span class="ctot">'+fmt(ytot)+'</span><span class="cproj">'+fmt(ytot/12)+'/mo</span></div>' +
     '</div>' +
     yearlyRows +
-    '<div class="addrow">' +
-      '<input class="ename" id="new-yr-name" type="text" placeholder="New yearly expense…" style="flex:1"/>' +
+    '<div class="addrow" style="flex-wrap:wrap;row-gap:6px">' +
+      '<input class="ename" id="new-yr-name" type="text" placeholder="New yearly expense…" style="flex:1;min-width:100px"/>' +
+      '<input class="txn-inp dt" id="new-yr-due" type="date" style="width:120px;flex-shrink:0"/>' +
       '<input class="eproj" id="new-yr-amt" type="number" inputmode="decimal" placeholder="$0"/>' +
       '<button class="addbtn" id="do-add-yr"><i class="ti ti-plus"></i></button>' +
     '</div></div>';
@@ -859,8 +908,9 @@ function wireContent() {
   app.querySelectorAll("[data-expand]").forEach(row => {
     row.addEventListener("click", () => {
       const id = row.dataset.expand;
-      S.expanded  = S.expanded === id ? null : id;
-      S.addingTxn = null;
+      if (S.expanded.has(id)) S.expanded.delete(id); else S.expanded.add(id);
+      S.addingTxn  = null;
+      S.editingTxn = null;
       renderContent();
     });
   });
@@ -878,11 +928,13 @@ function wireContent() {
   const savebtn = document.getElementById("txn-save");
   if (savebtn) {
     const doSave = () => {
+      const name = document.getElementById("txn-name")?.value || "";
+      if (!name.trim()) { document.getElementById("txn-name")?.focus(); return; }
       const amt = document.getElementById("txn-amt")?.value || "";
       if (!amt) { document.getElementById("txn-amt")?.focus(); return; }
       addTxn(
         savebtn.dataset.ttype, savebtn.dataset.tcid,
-        document.getElementById("txn-name")?.value  || "",
+        name,
         amt,
         document.getElementById("txn-date")?.value  || "",
         document.getElementById("txn-notes")?.value || ""
@@ -910,6 +962,57 @@ function wireContent() {
     });
   });
 
+  app.querySelectorAll("[data-tedit]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      S.editingTxn = btn.dataset.tedit;
+      S.addingTxn = null;
+      renderContent();
+      setTimeout(() => document.getElementById("etxn-name")?.focus(), 20);
+    });
+  });
+
+  const etxnSave = document.getElementById("etxn-save");
+  if (etxnSave) {
+    const doEditSave = () => {
+      const name = document.getElementById("etxn-name")?.value || "";
+      if (!name.trim()) { document.getElementById("etxn-name")?.focus(); return; }
+      const id = etxnSave.dataset.tsave;
+      const txns = S.data[S.month]?.transactions;
+      if (txns) {
+        const txn = txns.find(t => t.id === id);
+        if (txn) {
+          txn.name   = name.trim();
+          txn.amount = parseFloat(document.getElementById("etxn-amt")?.value) || 0;
+          txn.date   = document.getElementById("etxn-date")?.value   || "";
+          txn.notes  = (document.getElementById("etxn-notes")?.value || "").trim();
+          sv("data");
+        }
+      }
+      S.editingTxn = null;
+      renderContent();
+    };
+    etxnSave.addEventListener("click", e => { e.stopPropagation(); doEditSave(); });
+    ["etxn-name","etxn-amt","etxn-date","etxn-notes"].forEach(fid => {
+      document.getElementById(fid)?.addEventListener("keydown", e => { if (e.key === "Enter") doEditSave(); });
+    });
+  }
+
+  document.getElementById("etxn-cancel")?.addEventListener("click", e => {
+    e.stopPropagation();
+    S.editingTxn = null;
+    renderContent();
+  });
+
+  app.querySelectorAll("[data-tedit-del]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      delTxn(btn.dataset.teditDel);
+      S.editingTxn = null;
+      renderContent();
+    });
+  });
+
   app.querySelectorAll("[data-ef]").forEach(inp =>
     inp.addEventListener("input", () => { const [t,id,f]=inp.dataset.ef.split("|"); updateDef(t,id,f,inp.value); })
   );
@@ -932,17 +1035,23 @@ function wireContent() {
   document.getElementById("do-add-debt")?.addEventListener("click", adddebt);
 
   app.querySelectorAll("[data-ytap]").forEach(b => b.addEventListener("click", () => sdeditY(b.dataset.ytap)));
-  app.querySelectorAll("[data-ydel]").forEach(b => b.addEventListener("click", () => rmyearly(b.dataset.ydel)));
-  app.querySelectorAll("[data-yid]").forEach(i => {
-    const id=i.dataset.yid;
-    i.addEventListener("blur",    () => cdeditY(id));
-    i.addEventListener("keydown", e => { if(e.key==="Enter") cdeditY(id); });
-  });
+  app.querySelectorAll("[data-ydel]").forEach(b => b.addEventListener("click", () => { rmyearly(b.dataset.ydel); S.editingYearly=null; }));
+
+  const ysavebtn = document.querySelector("[data-ysave]");
+  if (ysavebtn) {
+    const yid = ysavebtn.dataset.ysave;
+    const doYSave = () => cdeditY(yid);
+    ysavebtn.addEventListener("click", doYSave);
+    ["yl","yd","yi"].forEach(pfx => {
+      document.getElementById(pfx+yid)?.addEventListener("keydown", e => { if(e.key==="Enter") doYSave(); });
+    });
+  }
+  document.querySelector("[data-ycancel]")?.addEventListener("click", () => { S.editingYearly=null; renderContent(); });
   document.getElementById("do-add-yr")?.addEventListener("click", addyearly);
 
   app.querySelectorAll("[data-goto]").forEach(b =>
     b.addEventListener("click", () => {
-      S.month=+b.dataset.goto; S.view="budget"; S.expanded=null; S.addingTxn=null; render();
+      S.month=+b.dataset.goto; S.view="budget"; S.expanded=new Set(); S.addingTxn=null; S.editingTxn=null; render();
     })
   );
 
@@ -1004,19 +1113,19 @@ function render() {
 
   app.querySelectorAll("[data-m]").forEach(b =>
     b.addEventListener("click", () => {
-      S.month=+b.dataset.m; S.expanded=null; S.addingTxn=null; render();
+      S.month=+b.dataset.m; S.expanded=new Set(); S.addingTxn=null; S.editingTxn=null; render();
       b.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
     })
   );
   app.querySelectorAll("[data-vw]").forEach(b =>
-    b.addEventListener("click", () => { if (S.editMode) S.editMode = false; S.view=b.dataset.vw; S.expanded=null; S.addingTxn=null; render(); })
+    b.addEventListener("click", () => { if (S.editMode) S.editMode = false; S.view=b.dataset.vw; S.expanded=new Set(); S.addingTxn=null; S.editingTxn=null; render(); })
   );
-  document.getElementById("yr-prev").addEventListener("click", () => { S.year--; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
-  document.getElementById("yr-next").addEventListener("click", () => { S.year++; S.expanded=null; S.addingTxn=null; loadState(); migrateTransactions(); render(); });
+  document.getElementById("yr-prev").addEventListener("click", () => { S.year--; S.expanded=new Set(); S.addingTxn=null; S.editingTxn=null; loadState(); migrateTransactions(); normalizeTxnDates(); render(); });
+  document.getElementById("yr-next").addEventListener("click", () => { S.year++; S.expanded=new Set(); S.addingTxn=null; S.editingTxn=null; loadState(); migrateTransactions(); normalizeTxnDates(); render(); });
   document.getElementById("edtbtn")?.addEventListener("click", () => {
     S.editMode = !S.editMode;
     if (S.editMode) S.view = "budget";
-    S.expanded=null; S.addingTxn=null; render();
+    S.expanded=new Set(); S.addingTxn=null; S.editingTxn=null; render();
   });
   wireContent();
 }
@@ -1025,6 +1134,7 @@ function render() {
 migrateOldKeys();
 loadState();
 migrateTransactions();
+normalizeTxnDates();
 render();
 syncFromSheets();
 if ("serviceWorker" in navigator) {
